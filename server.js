@@ -1,5 +1,9 @@
+// Requires
 const express = require('express');
 const mysql = require('mysql');
+
+// System Settings
+const port = 3000;
 
 const app = express();
 
@@ -60,8 +64,8 @@ app.get('/api/cases/:id', (req, res) => {
     });
 });
 
-// Nexa Core API - Get Case by PP id
-app.get('/api/cases/pp/:id', (req, res) => {
+// Nexa Core API - Get Case by Paraplanner id
+app.get('/api/cases/paraplanner/:id', (req, res) => {
     let sql = `SELECT * FROM work_case WHERE case_pp_id = ${req.params.id}`;
 
     let query = db.query(sql, (err, result) => {
@@ -75,8 +79,8 @@ app.get('/api/cases/pp/:id', (req, res) => {
     });
 });
 
-// Nexa Core API - Get Case by Ad id
-app.get('/api/cases/ad/:id', (req, res) => {
+// Nexa Core API - Get Case by Adviser id
+app.get('/api/cases/adviser/:id', (req, res) => {
     let sql = `SELECT * FROM work_case WHERE case_ad_id = ${req.params.id}`;
 
     let query = db.query(sql, (err, result) => {
@@ -90,4 +94,20 @@ app.get('/api/cases/ad/:id', (req, res) => {
     });
 });
 
-app.listen(3000, () => console.log('Nexa Core is listening on port 3000.'));
+// Nexa Core API - Get Cases that do not have a Paraplanner assigned
+app.get('/api/cases/paraplanner/none', (req, res) => {
+    let sql = `SELECT * FROM work_case WHERE case_pp_id IS NULL`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(result);
+
+        // JSON Response
+        res.json(result);
+    });
+});
+
+// Listen on Port
+app.listen(port, () => console.log('Nexa Core is listening on port 3000.'));
