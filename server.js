@@ -96,7 +96,7 @@ app.get('/api/cases/adviser/:id', (req, res) => {
 
 // Nexa Core API - Get Cases that do not have a Paraplanner assigned
 app.get('/api/cases/paraplanner/none', (req, res) => {
-    let sql = `SELECT * FROM work_case WHERE case_pp_id IS NULL`;
+    let sql = `SELECT * FROM work_case WHERE case_pp_id IS NULL OR case_pp_id = ''`;
 
     let query = db.query(sql, (err, result) => {
         if (err) {
