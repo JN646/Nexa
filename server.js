@@ -384,7 +384,22 @@ app.put('/api/paraplanners/update/:id', (req, res) => {
 
 // Delete Paraplanner
 app.delete('/api/paraplanners/delete/:id', (req, res) => {
-    let sql = `DELETE FROM paraplanners WHERE pp_id = ${req.params.id}`;
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    let sql = `DELETE FROM paraplanners WHERE pp_id = ${id}`;
 
     let query = db.query(sql, (err, result) => {
         if (err) {
@@ -397,7 +412,7 @@ app.delete('/api/paraplanners/delete/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -420,7 +435,7 @@ app.get('/api/advisers/all', (req, res) => {
         }
 
         // JSON Response
-        res.json(results);
+        res.status(200).json(results);
     });
 });
 
@@ -488,7 +503,22 @@ app.put('/api/advisers/update/:id', (req, res) => {
 
 // Delete Adviser
 app.delete('/api/advisers/delete/:id', (req, res) => {
-    let sql = `DELETE FROM advisers WHERE ad_id = ${req.params.id}`;
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    let sql = `DELETE FROM advisers WHERE ad_id = ${id}`;
 
     let query = db.query(sql, (err, result) => {
         if (err) {
