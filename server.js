@@ -153,7 +153,7 @@ app.get('/api/cases/all', (req, res) => {
         }
         
         // JSON Response
-        res.status(200).json(result);
+        res.status(200).json(results);
     });
 });
 
@@ -178,10 +178,40 @@ app.get('/api/cases/:id', (req, res) => {
 
 // Create Case
 app.post('/api/cases/create', (req, res) => {
+    // Get variables
+    let case_pp_id = req.body.case_pp_id;
+    let case_ad_id = req.body.case_ad_id;
+    let case_due_date = req.body.case_due_date;
+    let case_type = req.body.case_type;
+    let case_bid_price = req.body.case_bid_price;
+    let case_bid_status = req.body.case_bid_status;
+
+    // Check if variables are empty
+    if (case_ad_id == '' || case_due_date == '' || case_type == '' || case_bid_price == '' || case_bid_status == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (case_ad_id == null || case_due_date == null || case_type == null || case_bid_price == null || case_bid_status == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are numbers
+    if (isNaN(case_pp_id) || isNaN(case_ad_id) || isNaN(case_bid_price)) {
+        res.status(400).json('Please enter a number.');
+        return;
+    }
+
+    // Create array
     let post = {
-        case_pp_id: req.body.case_pp_id,
-        case_ad_id: req.body.case_ad_id,
-        case_due_date: req.body.case_due_date
+        case_pp_id: case_pp_id,
+        case_ad_id: case_ad_id,
+        case_due_date: case_due_date,
+        case_type: case_type,
+        case_bid_price: case_bid_price,
+        case_bid_status: case_bid_status
     };
 
     let sql = 'INSERT INTO work_case SET ?';
@@ -203,7 +233,58 @@ app.post('/api/cases/create', (req, res) => {
 
 // Update Case
 app.put('/api/cases/update/:id', (req, res) => {
-    let sql = `UPDATE work_case SET case_pp_id = '${req.body.case_pp_id}', case_ad_id = '${req.body.case_ad_id}', case_due_date = '${req.body.case_due_date}' WHERE case_id = ${req.params.id}`;
+    // Get variables
+    let case_pp_id = req.body.case_pp_id;
+    let case_ad_id = req.body.case_ad_id;
+    let case_due_date = req.body.case_due_date;
+    let case_type = req.body.case_type;
+    let case_bid_price = req.body.case_bid_price;
+    let case_bid_status = req.body.case_bid_status;
+    let case_id = req.params.id;
+
+    // Check if ID is empty
+    if (case_id == '' || case_id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(case_id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    // Check if variables are empty
+    if (case_ad_id == '' || case_due_date == '' || case_type == '' || case_bid_price == '' || case_bid_status == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (case_ad_id == null || case_due_date == null || case_type == null || case_bid_price == null || case_bid_status == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are numbers
+    if (isNaN(case_ad_id) || isNaN(case_bid_price)) {
+        res.status(400).json('Please enter a number.');
+        return;
+    }
+
+    // Create array
+    let post = {
+        case_pp_id: case_pp_id,
+        case_ad_id: case_ad_id,
+        case_due_date: case_due_date,
+        case_type: case_type,
+        case_bid_price: case_bid_price,
+        case_bid_status: case_bid_status,
+        case_id: case_id
+    };
+
+    // Update Case
+    let sql = `UPDATE work_case SET case_pp_id = ?, case_ad_id = ?, case_due_date = ?, case_type = ?, case_bid_price = ?, case_bid_status = ? WHERE case_id = ?`;
 
     let query = db.query(sql, (err, result) => {
         if (err) {
@@ -214,9 +295,14 @@ app.put('/api/cases/update/:id', (req, res) => {
         if (process.env.consoleLogging == true) {
             console.log(result);
         }
-
-        // JSON Response
-        res.status(200).json(result);
+        
+        // Check that the case exists
+        if (result.length == 0) {
+            res.status(400).json('Case not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
     });
 });
 
@@ -238,6 +324,12 @@ app.delete('/api/cases/delete/:id', (req, res) => {
         res.status(200).json(result);
     });
 });
+
+// *****************************************************
+// BIDS
+// *****************************************************
+
+
 
 // *****************************************************
 // PARAPLANNERS
@@ -603,7 +695,9 @@ app.post('/api/advisers/create', (req, res) => {
     let post = {
         ad_firstname: ad_firstname,
         ad_lastname: ad_lastname,
-        ad_email: ad_email
+        ad_role: ad_role,
+        ad_email: ad_email,
+        ad_tel: ad_tel
     };
 
     let sql = 'INSERT INTO advisers SET ?';
@@ -665,12 +759,14 @@ app.put('/api/advisers/update/:id', (req, res) => {
     let post = {
         ad_firstname: ad_firstname,
         ad_lastname: ad_lastname,
+        ad_role: ad_role,
         ad_email: ad_email,
+        ad_tel: ad_tel,
         ad_id: ad_id
     };
 
     // Update Adviser
-    let sql = `UPDATE advisers SET ad_firstname = ?, ad_lastname = ?, ad_email = ? WHERE ad_id = ?`;
+    let sql = `UPDATE advisers SET ad_firstname = ?, ad_lastname = ?, ad_role = ?, ad_email = ?, ad_tel = ? WHERE ad_id = ?`;
 
     let query = db.query(sql, post, (err, result) => {
         if (err) {
