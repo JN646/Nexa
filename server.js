@@ -5,6 +5,7 @@
 // Requires
 const express = require('express');
 const mysql = require('mysql');
+const bodyParser = require('body-parser');
 
 // System Settings
 const port = 3000;
@@ -12,6 +13,8 @@ const consoleLogging = false;
 const apiKey = '6bc32663-fb4f-4b8b-86e7-f08faa2cf302';
 
 const app = express();
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // *****************************************************
 // DATABASE
@@ -88,9 +91,9 @@ app.use((req, res, next) => {
     }
 
     // Sanitise all inputs
-    for (let key in req.body) {
-        req.body[key] = req.sanitize(req.body[key]);
-    }
+    // for (let key in req.body) {
+    //     req.body[key] = req.sanitize(req.body[key]);
+    // }
 
     next();
 });
@@ -405,10 +408,28 @@ app.get('/api/advisers/all', (req, res) => {
 
 // Create Adviser
 app.post('/api/advisers/create', (req, res) => {
+    // Get variables
+    let ad_firstname = req.body.ad_firstname;
+    let ad_lastname = req.body.ad_lastname;
+    let ad_email = req.body.ad_email;
+
+    // Check if variables are empty
+    if (ad_firstname == '' || ad_lastname == '' || ad_email == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (ad_firstname == null || ad_lastname == null || ad_email == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Create array
     let post = {
-        ad_firstname: req.body.ad_firstname,
-        ad_lastname: req.body.ad_lastname,
-        ad_email: req.body.ad_email
+        ad_firstname: ad_firstname,
+        ad_lastname: ad_lastname,
+        ad_email: ad_email
     };
 
     let sql = 'INSERT INTO advisers SET ?';
