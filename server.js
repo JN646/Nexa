@@ -258,6 +258,12 @@ app.get('/api/cases/paraplanner/:id', (req, res) => {
             console.log(results);
         }
 
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Paraplanner has no cases.');
+            return;
+        }
+
         // JSON Response
         res.status(200).json(result);
     });
@@ -275,6 +281,12 @@ app.get('/api/cases/adviser/:id', (req, res) => {
         // Console Logging
         if (consoleLogging == true) {
             console.log(results);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Adviser not found.');
+            return;
         }
 
         // JSON Response
@@ -317,6 +329,40 @@ app.get('/api/paraplanners/all', (req, res) => {
 
         // JSON Response
         res.status(200).json(result);
+    });
+});
+
+// Get Paraplanner by ID
+app.get('/api/paraplanners/:id', (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    let sql = `SELECT * FROM paraplanners WHERE pp_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Adviser not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
     });
 });
 
@@ -450,8 +496,13 @@ app.delete('/api/paraplanners/delete/:id', (req, res) => {
             console.log(result);
         }
 
-        // JSON Response
-        res.status(200).json(result);
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Paraplanner not found.');
+            return;
+        } else {
+            res.status(200).json('Paraplanner deleted.');
+        }
     });
 });
 
@@ -475,6 +526,40 @@ app.get('/api/advisers/all', (req, res) => {
 
         // JSON Response
         res.status(200).json(results);
+    });
+});
+
+// Get Adviser by ID
+app.get('/api/advisers/:id', (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    let sql = `SELECT * FROM advisers WHERE ad_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Adviser not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
     });
 });
 
@@ -624,8 +709,13 @@ app.delete('/api/advisers/delete/:id', (req, res) => {
             console.log(result);
         }
 
-        // JSON Response
-        res.status(200).json(result);
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Adviser not found.');
+            return;
+        } else {
+            res.status(200).json('Adviser deleted.');
+        }
     });
 });
 
