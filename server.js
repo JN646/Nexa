@@ -322,10 +322,28 @@ app.get('/api/paraplanners/all', (req, res) => {
 
 // Create Paraplanner
 app.post('/api/paraplanners/create', (req, res) => {
+    // Get variables
+    let pp_firstname = req.body.pp_firstname;
+    let pp_lastname = req.body.pp_lastname;
+    let pp_email = req.body.pp_email;
+
+    // Check if variables are empty
+    if (pp_firstname == '' || pp_lastname == '' || pp_email == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (pp_firstname == null || pp_lastname == null || pp_email == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Create array
     let post = {
-        pp_firstname: req.body.pp_firstname,
-        pp_lastname: req.body.pp_lastname,
-        pp_email: req.body.pp_email
+        pp_firstname: pp_firstname,
+        pp_lastname: pp_lastname,
+        pp_email: pp_email
     };
 
     let sql = 'INSERT INTO paraplanners SET ?';
@@ -483,7 +501,7 @@ app.delete('/api/advisers/delete/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
