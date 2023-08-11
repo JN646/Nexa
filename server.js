@@ -676,6 +676,40 @@ app.get("/api/bids/:id", (req, res) => {
   });
 });
 
+// Count number of bids by case ID
+app.get("/api/bids/count/:id", (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == "" || id == null) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    let sql = `SELECT COUNT(*) AS bid_count FROM bids WHERE bid_case_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Bid not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
 // *****************************************************
 // PARAPLANNERS
 // *****************************************************
@@ -1237,7 +1271,7 @@ app.get("/api/bids/adviser/:id", (req, res) => {
   }
 
   // Get Bids
-  let sql = `SELECT * FROM bids WHERE bid_ad_id = ${req.params.id}`;
+  let sql = `SELECT * FROM bids WHERE bid_ad_id = ${id}`;
 
   let query = db.query(sql, (err, result) => {
     if (err) {

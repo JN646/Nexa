@@ -37,3 +37,4 @@
 - api/bids/update/:id
 - api/bids/delete/:id
 - api/bids/accept/:id
+- api/bids/count/:id
