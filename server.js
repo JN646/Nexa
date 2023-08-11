@@ -1466,6 +1466,12 @@ app.post("/api/reviews/create", (req, res) => {
         return;
     }
 
+    // Check that the comment is less than 1000 characters
+    if (review_comment.length > 1000) {
+        res.status(400).json("Comment must be less than 1000 characters");
+        return;
+    }
+
     // Create Review
     let sql = `INSERT INTO reviews (review_pp_id, review_ad_id, review_case_id, review_stars, review_comment) VALUES (${review_pp_id}, ${review_ad_id}, ${review_case_id}, ${review_stars}, '${review_comment}')`;
 
@@ -1519,6 +1525,12 @@ app.put("/api/reviews/update/:id", (req, res) => {
     // Check that the stars is a number
     if (review_stars > 5 || review_stars < 1) {
         res.status(400).json("Stars must be between 1 and 5");
+        return;
+    }
+
+    // Check that the comment is less than 1000 characters
+    if (review_comment.length > 1000) {
+        res.status(400).json("Comment must be less than 1000 characters");
         return;
     }
 
