@@ -53,6 +53,21 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
+// Trim and sanitize all inputs
+app.use((req, res, next) => {
+    // Trim all inputs
+    for (let key in req.body) {
+        req.body[key] = req.body[key].trim();
+    }
+
+    // Sanitize all inputs
+    for (let key in req.body) {
+        req.body[key] = req.sanitize(req.body[key]);
+    }
+
+    next();
+});
+
 // Home Page
 app.get('/', (req, res) => {
     res.send('Nexa Core API');
