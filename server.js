@@ -988,6 +988,45 @@ app.delete("/api/paraplanners/delete/:id", (req, res) => {
   });
 });
 
+// Get paraplanner star rating
+app.get("/api/paraplanners/star-rating/:id", (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == "" || id == null) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    let sql = `SELECT AVG(rating) AS rating FROM reviews WHERE pp_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Paraplanner not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
 // *****************************************************
 // ADVISERS
 // *****************************************************
@@ -1289,6 +1328,251 @@ app.get("/api/bids/adviser/:id", (req, res) => {
     // JSON Response
     res.status(200).json(result);
   });
+});
+
+// *****************************************************
+// REVIEWS
+// *****************************************************
+
+// Get all reviews
+app.get("/api/reviews/all", (req, res) => {
+    // Get Reviews
+    let sql = `SELECT * FROM reviews`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Get reviews by adviser id
+app.get("/api/reviews/adviser/:id", (req, res) => {
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == "" || id == null) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    // Get Reviews
+    let sql = `SELECT * FROM reviews WHERE review_ad_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Get reviews by paraplanner id
+app.get("/api/reviews/paraplanner/:id", (req, res) => {
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == "" || id == null) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    // Get Reviews
+    let sql = `SELECT * FROM reviews WHERE review_pp_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Post a review
+app.post("/api/reviews/create", (req, res) => {
+    // Get variables
+    let review_pp_id = req.body.review_pp_id;
+    let review_ad_id = req.body.review_ad_id;
+    let review_case_id = req.body.review_case_id;
+    let review_stars = req.body.review_stars;
+    let review_comment = req.body.review_comment;
+
+    // Check if variables are empty
+    if (
+        review_pp_id == "" ||
+        review_pp_id == null ||
+        review_ad_id == "" ||
+        review_ad_id == null ||
+        review_case_id == "" ||
+        review_case_id == null ||
+        review_stars == "" ||
+        review_stars == null ||
+        review_comment == "" ||
+        review_comment == null
+    ) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(review_pp_id) || isNaN(review_ad_id) || isNaN(review_case_id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    // Check that the stars is a number
+    if (isNaN(review_stars)) {
+        res.status(400).json("Stars is not a number");
+        return;
+    }
+
+    // Check that the stars is a number
+    if (review_stars > 5 || review_stars < 1) {
+        res.status(400).json("Stars must be between 1 and 5");
+        return;
+    }
+
+    // Create Review
+    let sql = `INSERT INTO reviews (review_pp_id, review_ad_id, review_case_id, review_stars, review_comment) VALUES (${review_pp_id}, ${review_ad_id}, ${review_case_id}, ${review_stars}, '${review_comment}')`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Update a review
+app.put("/api/reviews/update/:id", (req, res) => {
+    // Get variables
+    let id = req.params.id;
+    let review_stars = req.body.review_stars;
+    let review_comment = req.body.review_comment;
+
+    // Check if variables are empty
+    if (
+        id == "" ||
+        id == null ||
+        review_stars == "" ||
+        review_stars == null ||
+        review_comment == "" ||
+        review_comment == null
+    ) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    // Check that the stars is a number
+    if (isNaN(review_stars)) {
+        res.status(400).json("Stars is not a number");
+        return;
+    }
+
+    // Check that the stars is a number
+    if (review_stars > 5 || review_stars < 1) {
+        res.status(400).json("Stars must be between 1 and 5");
+        return;
+    }
+
+    // Update Review
+    let sql = `UPDATE reviews SET review_stars = ${review_stars}, review_comment = '${review_comment}' WHERE review_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Delete a review
+app.delete("/api/reviews/delete/:id", (req, res) => {
+    // Get variables
+    let id = req.params.id;
+
+    // Check if variables are empty
+    if (id == "" || id == null) {
+        res.status(400).json("Please fill in all fields.");
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json("ID is not a number");
+        return;
+    }
+
+    // Delete Review
+    let sql = `DELETE FROM reviews WHERE review_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // *****************************************************

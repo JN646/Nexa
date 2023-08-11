@@ -18,6 +18,7 @@
 - api/paraplanners/create
 - api/paraplanners/update/:id
 - api/paraplanners/delete/:id
+- api/paraplanners/star-rating/:id
 
 ### Advisers
 
@@ -38,3 +39,13 @@
 - api/bids/delete/:id
 - api/bids/accept/:id
 - api/bids/count/:id
+
+### Reviews
+
+- api/reviews/all
+- api/reviews/:id
+- api/reviews/create
+- api/reviews/update/:id
+- api/reviews/delete/:id
+- api/reviews/adviser/:id
+- api/reviews/paraplanner/:id
