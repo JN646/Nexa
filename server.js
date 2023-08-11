@@ -384,6 +384,12 @@ app.post('/api/paraplanners/create', (req, res) => {
         res.status(400).json('Please fill in all fields.');
         return;
     }
+    
+    // Ensure that the email is valid
+    if (pp_email.indexOf('@') == -1 || pp_email.indexOf('.') == -1) {
+        res.status(400).json('Please enter a valid email address.');
+        return;
+    }
 
     // Create array
     let post = {
@@ -438,6 +444,12 @@ app.put('/api/paraplanners/update/:id', (req, res) => {
     // Check that the variables are not empty
     if (pp_firstname == null || pp_lastname == null || pp_email == null) {
         res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Ensure that the email is valid
+    if (pp_email.indexOf('@') == -1 || pp_email.indexOf('.') == -1) {
+        res.status(400).json('Please enter a valid email address.');
         return;
     }
 
@@ -582,6 +594,12 @@ app.post('/api/advisers/create', (req, res) => {
         return;
     }
 
+    // Ensure that the email is valid
+    if (ad_email.indexOf('@') == -1 || ad_email.indexOf('.') == -1) {
+        res.status(400).json('Please enter a valid email address.');
+        return;
+    }
+
     // Create array
     let post = {
         ad_firstname: ad_firstname,
@@ -635,6 +653,12 @@ app.put('/api/advisers/update/:id', (req, res) => {
     // Check that the variables are not empty
     if (ad_firstname == null || ad_lastname == null || ad_email == null) {
         res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Ensure that the email is valid
+    if (ad_email.indexOf('@') == -1 || ad_email.indexOf('.') == -1) {
+        res.status(400).json('Please enter a valid email address.');
         return;
     }
 
