@@ -6,11 +6,10 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 
-// System Settings
-const port = 3000;
-const consoleLogging = false;
-const apiKey = '6bc32663-fb4f-4b8b-86e7-f08faa2cf302';
+// Load env vars
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
@@ -44,7 +43,7 @@ db.connect((err) => {
 // Log all requests
 app.use((req, res, next) => {
     // Console Logging
-    if (consoleLogging == true) {
+    if (process.env.consoleLogging == true) {
         console.log(req.method + ' ' + req.url + ' ' + res.statusCode);
     }
 
@@ -76,7 +75,7 @@ app.use('/api', (req, res, next) => {
 
 // Check for API Key
 app.use((req, res, next) => {
-    if (req.query.apiKey == apiKey) {
+    if (req.query.apiKey == process.env.apiKey) {
         next();
     } else {
         res.status(401).json('Invalid API Key');
@@ -118,7 +117,7 @@ app.get('/status', (req, res) => {
     };
 
     // Console Logging
-    if (consoleLogging == true) {
+    if (process.env.consoleLogging == true) {
         console.log(server);
     }
 
@@ -149,7 +148,7 @@ app.get('/api/cases/all', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
         
@@ -168,7 +167,7 @@ app.get('/api/cases/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
 
@@ -193,7 +192,7 @@ app.post('/api/cases/create', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -212,7 +211,7 @@ app.put('/api/cases/update/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -231,7 +230,7 @@ app.delete('/api/cases/delete/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -254,7 +253,7 @@ app.get('/api/cases/paraplanner/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
 
@@ -279,7 +278,7 @@ app.get('/api/cases/adviser/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
 
@@ -304,7 +303,7 @@ app.get('/api/cases/paraplanner/none', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
 
@@ -323,7 +322,7 @@ app.get('/api/paraplanners/all', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
 
@@ -406,7 +405,7 @@ app.post('/api/paraplanners/create', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -470,7 +469,7 @@ app.put('/api/paraplanners/update/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -504,7 +503,7 @@ app.delete('/api/paraplanners/delete/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -532,7 +531,7 @@ app.get('/api/advisers/all', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(results);
         }
 
@@ -615,7 +614,7 @@ app.post('/api/advisers/create', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -679,7 +678,7 @@ app.put('/api/advisers/update/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -729,7 +728,7 @@ app.delete('/api/advisers/delete/:id', (req, res) => {
         }
 
         // Console Logging
-        if (consoleLogging == true) {
+        if (process.env.consoleLogging == true) {
             console.log(result);
         }
 
@@ -748,4 +747,4 @@ app.delete('/api/advisers/delete/:id', (req, res) => {
 // *****************************************************
 
 // Listen on Port
-app.listen(port, () => console.log('Nexa Core is listening on port 3000.'));
+app.listen(process.env.port, () => console.log('Nexa Core is listening on port ' + process.env.port));
