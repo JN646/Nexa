@@ -1,3 +1,7 @@
+// *****************************************************
+// Nexa Core API
+// *****************************************************
+
 // Requires
 const express = require('express');
 const mysql = require('mysql');
@@ -7,6 +11,10 @@ const port = 3000;
 const consoleLogging = false;
 
 const app = express();
+
+// *****************************************************
+// DATABASE
+// *****************************************************
 
 // Configure Mysql
 const db = mysql.createConnection({
@@ -24,6 +32,10 @@ db.connect((err) => {
     }
     console.log('MySQL Connected...');
 });
+
+// *****************************************************
+// FUNCTIONS
+// *****************************************************
 
 // Log all requests
 app.use((req, res, next) => {
@@ -68,6 +80,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// *****************************************************
+// CORE PAGES
+// *****************************************************
+
 // Home Page
 app.get('/', (req, res) => {
     res.send('Nexa Core API');
@@ -92,10 +108,18 @@ app.get('/status', (req, res) => {
     res.json(server);
 });
 
+// *****************************************************
+// API
+// *****************************************************
+
 // Nexa Core API
 app.get('/api', (req, res) => {
     res.send('Nexa Core API Initiated');
 });
+
+// *****************************************************
+// CASES
+// *****************************************************
 
 // Nexa Core API - Get All Cases
 app.get('/api/cases/all', (req, res) => {
@@ -197,6 +221,10 @@ app.delete('/api/cases/delete/:id', (req, res) => {
         res.json(result);
     });
 });
+
+// *****************************************************
+// PARAPLANNERS
+// *****************************************************
 
 // Nexa Core API - Get Case by Paraplanner id
 app.get('/api/cases/paraplanner/:id', (req, res) => {
@@ -337,6 +365,10 @@ app.delete('/api/paraplanners/delete/:id', (req, res) => {
     });
 });
 
+// *****************************************************
+// ADVISERS
+// *****************************************************
+
 // List of all Advisers
 app.get('/api/advisers/all', (req, res) => {
     let sql = 'SELECT * FROM advisers';
@@ -418,6 +450,10 @@ app.delete('/api/advisers/delete/:id', (req, res) => {
         res.json(result);
     });
 });
+
+// *****************************************************
+// SERVER
+// *****************************************************
 
 // Listen on Port
 app.listen(port, () => console.log('Nexa Core is listening on port 3000.'));
