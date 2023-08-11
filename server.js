@@ -518,9 +518,25 @@ app.delete('/api/advisers/delete/:id', (req, res) => {
         return;
     }
 
-    let sql = `DELETE FROM advisers WHERE ad_id = ${id}`;
+    // Prevent deletion if the adviser has any cases assigned to them
+    let sql1 = `SELECT * FROM work_case WHERE case_ad_id = ${id}`;
 
-    let query = db.query(sql, (err, result) => {
+    let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Check if the adviser has any cases assigned to them
+        if (result.length > 0) {
+            res.status(400).json('Adviser has cases assigned to them.');
+            return;
+        }
+    });
+
+    // If the adviser has no cases assigned to them, delete them
+    let sql2 = `DELETE FROM advisers WHERE ad_id = ${id}`;
+
+    let query2 = db.query(sql2, (err, result) => {
         if (err) {
             throw err;
         }
