@@ -352,37 +352,37 @@ app.delete("/api/cases/delete/:id", (req, res) => {
 
 // Cases Bids
 app.get("/api/cases/bids/:id", (req, res) => {
-    // Get ID
-    let id = req.params.id;
+  // Get ID
+  let id = req.params.id;
 
-    // Check if ID is empty
-    if (id == "" || id == null) {
-        res.status(400).json("Please fill in all fields.");
-        return;
+  // Check if ID is empty
+  if (id == "" || id == null) {
+    res.status(400).json("Please fill in all fields.");
+    return;
+  }
+
+  // Check that the ID is a number
+  if (isNaN(id)) {
+    res.status(400).json("ID is not a number");
+    return;
+  }
+
+  // Get Bids
+  let sql = `SELECT * FROM bids WHERE bid_case_id = ${id}`;
+
+  let query = db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
     }
 
-    // Check that the ID is a number
-    if (isNaN(id)) {
-        res.status(400).json("ID is not a number");
-        return;
+    // Console Logging
+    if (process.env.consoleLogging == true) {
+      console.log(result);
     }
 
-    // Get Bids
-    let sql = `SELECT * FROM bids WHERE bid_case_id = ${id}`;
-
-    let query = db.query(sql, (err, result) => {
-        if (err) {
-            throw err;
-        }
-
-        // Console Logging
-        if (process.env.consoleLogging == true) {
-            console.log(result);
-        }
-
-        // JSON Response
-        res.status(200).json(result);
-    });
+    // JSON Response
+    res.status(200).json(result);
+  });
 });
 
 // *****************************************************
@@ -1185,76 +1185,76 @@ app.delete("/api/advisers/delete/:id", (req, res) => {
 
 // Bids by paraplanner id
 app.get("/api/bids/paraplanner/:id", (req, res) => {
-    let id = req.params.id;
+  let id = req.params.id;
 
-    // Check if ID is empty
-    if (id == "" || id == null) {
-        res.status(400).json("Please fill in all fields.");
-        return;
+  // Check if ID is empty
+  if (id == "" || id == null) {
+    res.status(400).json("Please fill in all fields.");
+    return;
+  }
+
+  // Check that the ID is a number
+  if (isNaN(id)) {
+    res.status(400).json("ID is not a number");
+    return;
+  }
+
+  // Get Bids
+  let sql = `SELECT * FROM bids WHERE bid_pp_id = ${req.params.id}`;
+
+  let query = db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
     }
 
-    // Check that the ID is a number
-    if (isNaN(id)) {
-        res.status(400).json("ID is not a number");
-        return;
+    // Console Logging
+    if (process.env.consoleLogging == true) {
+      console.log(result);
+
+      // JSON Response
+      res.status(200).json(result);
     }
 
-    // Get Bids
-    let sql = `SELECT * FROM bids WHERE bid_pp_id = ${req.params.id}`;
-
-    let query = db.query(sql, (err, result) => {
-        if (err) {
-            throw err;
-        }
-
-        // Console Logging
-        if (process.env.consoleLogging == true) {
-            console.log(result);
-
-            // JSON Response
-            res.status(200).json(result);
-        }
-
-        // JSON Response
-        res.status(200).json(result);
-    });
+    // JSON Response
+    res.status(200).json(result);
+  });
 });
 
 // Bids by adviser id
 app.get("/api/bids/adviser/:id", (req, res) => {
-    let id = req.params.id;
+  let id = req.params.id;
 
-    // Check if ID is empty
-    if (id == "" || id == null) {
-        res.status(400).json("Please fill in all fields.");
-        return;
+  // Check if ID is empty
+  if (id == "" || id == null) {
+    res.status(400).json("Please fill in all fields.");
+    return;
+  }
+
+  // Check that the ID is a number
+  if (isNaN(id)) {
+    res.status(400).json("ID is not a number");
+    return;
+  }
+
+  // Get Bids
+  let sql = `SELECT * FROM bids WHERE bid_ad_id = ${req.params.id}`;
+
+  let query = db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
     }
 
-    // Check that the ID is a number
-    if (isNaN(id)) {
-        res.status(400).json("ID is not a number");
-        return;
+    // Console Logging
+    if (process.env.consoleLogging == true) {
+      console.log(result);
+
+      // JSON Response
+      res.status(200).json(result);
     }
 
-    // Get Bids
-    let sql = `SELECT * FROM bids WHERE bid_ad_id = ${req.params.id}`;
-
-    let query = db.query(sql, (err, result) => {
-        if (err) {
-            throw err;
-        }
-
-        // Console Logging
-        if (process.env.consoleLogging == true) {
-            console.log(result);
-
-            // JSON Response
-            res.status(200).json(result);
-        }
-
-        // JSON Response
-        res.status(200).json(result);
-    });
+    // JSON Response
+    res.status(200).json(result);
+  });
 });
 
 // *****************************************************
