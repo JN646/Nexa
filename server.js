@@ -104,7 +104,7 @@ app.use((req, res, next) => {
 
 // Home Page
 app.get('/', (req, res) => {
-    res.send('Nexa Core API');
+    res.status(200).send('Nexa Core API');
 });
 
 // Status
@@ -123,7 +123,7 @@ app.get('/status', (req, res) => {
     }
 
     // JSON Response
-    res.json(server);
+    res.status(200).json(result);
 });
 
 // *****************************************************
@@ -132,7 +132,7 @@ app.get('/status', (req, res) => {
 
 // Nexa Core API
 app.get('/api', (req, res) => {
-    res.send('Nexa Core API Initiated');
+    res.status(200).send('Nexa Core API Initiated');
 });
 
 // *****************************************************
@@ -154,7 +154,7 @@ app.get('/api/cases/all', (req, res) => {
         }
         
         // JSON Response
-        res.json(results);
+        res.status(200).json(result);
     });
 });
 
@@ -173,7 +173,7 @@ app.get('/api/cases/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -198,7 +198,7 @@ app.post('/api/cases/create', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -217,7 +217,7 @@ app.put('/api/cases/update/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -236,7 +236,7 @@ app.delete('/api/cases/delete/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -259,7 +259,7 @@ app.get('/api/cases/paraplanner/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -278,7 +278,7 @@ app.get('/api/cases/adviser/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -297,7 +297,7 @@ app.get('/api/cases/paraplanner/none', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -316,7 +316,7 @@ app.get('/api/paraplanners/all', (req, res) => {
         }
 
         // JSON Response
-        res.json(results);
+        res.status(200).json(result);
     });
 });
 
@@ -359,15 +359,54 @@ app.post('/api/paraplanners/create', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
 // Update Paraplanner
 app.put('/api/paraplanners/update/:id', (req, res) => {
-    let sql = `UPDATE paraplanners SET pp_firstname = '${req.body.pp_firstname}', pp_lastname = '${req.body.pp_lastname}', pp_email = '${req.body.pp_email}' WHERE pp_id = ${req.params.id}`;
+    // Get variables
+    let pp_firstname = req.body.pp_firstname;
+    let pp_lastname = req.body.pp_lastname;
+    let pp_email = req.body.pp_email;
+    let pp_id = req.params.id;
 
-    let query = db.query(sql, (err, result) => {
+    // Check if ID is empty
+    if (pp_id == '' || pp_id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(pp_id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    // Check if variables are empty
+    if (pp_firstname == '' || pp_lastname == '' || pp_email == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (pp_firstname == null || pp_lastname == null || pp_email == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Create array
+    let post = {
+        pp_firstname: pp_firstname,
+        pp_lastname: pp_lastname,
+        pp_email: pp_email,
+        pp_id: pp_id
+    };
+
+    // Update Paraplanner
+    let sql = `UPDATE paraplanners SET pp_firstname = ?, pp_lastname = ?, pp_email = ? WHERE pp_id = ?`;
+
+    let query = db.query(sql, post, (err, result) => {
         if (err) {
             throw err;
         }
@@ -378,7 +417,7 @@ app.put('/api/paraplanners/update/:id', (req, res) => {
         }
 
         // JSON Response
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -484,9 +523,48 @@ app.post('/api/advisers/create', (req, res) => {
 
 // Update Adviser
 app.put('/api/advisers/update/:id', (req, res) => {
-    let sql = `UPDATE advisers SET ad_firstname = '${req.body.ad_firstname}', ad_lastname = '${req.body.ad_lastname}', ad_email = '${req.body.ad_email}' WHERE ad_id = ${req.params.id}`;
+    // Get variables
+    let ad_firstname = req.body.ad_firstname;
+    let ad_lastname = req.body.ad_lastname;
+    let ad_email = req.body.ad_email;
+    let ad_id = req.params.id;
 
-    let query = db.query(sql, (err, result) => {
+    // Check if ID is empty
+    if (ad_id == '' || ad_id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(ad_id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    // Check if variables are empty
+    if (ad_firstname == '' || ad_lastname == '' || ad_email == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (ad_firstname == null || ad_lastname == null || ad_email == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Create array
+    let post = {
+        ad_firstname: ad_firstname,
+        ad_lastname: ad_lastname,
+        ad_email: ad_email,
+        ad_id: ad_id
+    };
+
+    // Update Adviser
+    let sql = `UPDATE advisers SET ad_firstname = ?, ad_lastname = ?, ad_email = ? WHERE ad_id = ?`;
+
+    let query = db.query(sql, post, (err, result) => {
         if (err) {
             throw err;
         }
