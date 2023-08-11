@@ -329,7 +329,258 @@ app.delete('/api/cases/delete/:id', (req, res) => {
 // BIDS
 // *****************************************************
 
+// Create Bid
+app.post('/api/bids/create', (req, res) => {
+    // Get variables
+    let bid_case_id = req.body.bid_case_id;
+    let bid_pp_id = req.body.bid_pp_id;
+    let bid_ad_id = req.body.bid_ad_id;
+    let bid_price = req.body.bid_price;
+    let bid_status = req.body.bid_status;
 
+    // Check if variables are empty
+    if (bid_case_id == '' || bid_pp_id == '' || bid_ad_id == '' || bid_price == '' || bid_status == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (bid_case_id == null || bid_pp_id == null || bid_ad_id == null || bid_price == null || bid_status == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are numbers
+    if (isNaN(bid_case_id) || isNaN(bid_pp_id) || isNaN(bid_ad_id) || isNaN(bid_price)) {
+        res.status(400).json('Please enter a number.');
+        return;
+    }
+
+    // Create array
+    let post = {
+        bid_case_id: bid_case_id,
+        bid_pp_id: bid_pp_id,
+        bid_ad_id: bid_ad_id,
+        bid_price: bid_price,
+        bid_status: bid_status
+    };
+
+    let sql = 'INSERT INTO bids SET ?';
+
+    let query = db.query(sql, post, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Check that the case exists
+        if (result.length == 0) {
+            res.status(400).json('Case not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// Update Bid
+app.put('/api/bids/update/:id', (req, res) => {
+    // Get variables
+    let bid_case_id = req.body.bid_case_id;
+    let bid_pp_id = req.body.bid_pp_id;
+    let bid_ad_id = req.body.bid_ad_id;
+    let bid_price = req.body.bid_price;
+    let bid_status = req.body.bid_status;
+    let bid_id = req.params.id;
+
+    // Check if ID is empty
+    if (bid_id == '' || bid_id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(bid_id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    // Check if variables are empty
+    if (bid_case_id == '' || bid_pp_id == '' || bid_ad_id == '' || bid_price == '' || bid_status == '') {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are not empty
+    if (bid_case_id == null || bid_pp_id == null || bid_ad_id == null || bid_price == null || bid_status == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the variables are numbers
+    if (isNaN(bid_case_id) || isNaN(bid_pp_id) || isNaN(bid_ad_id) || isNaN(bid_price)) {
+        res.status(400).json('Please enter a number.');
+        return;
+    }
+
+    // Create array
+    let post = {
+        bid_case_id: bid_case_id,
+        bid_pp_id: bid_pp_id,
+        bid_ad_id: bid_ad_id,
+        bid_price: bid_price,
+        bid_status: bid_status,
+        bid_id: bid_id
+    };
+
+    // Update Bid
+    let sql = `UPDATE bids SET bid_case_id = ?, bid_pp_id = ?, bid_ad_id = ?, bid_price = ?, bid_status = ? WHERE bid_id = ?`;
+
+    let query = db.query(sql, post, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Check that the case exists
+        if (result.length == 0) {
+            res.status(400).json('Case not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// Accept Bid by ID
+app.put('/api/bids/accept/:id', (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    // Update Bid
+    let sql = `UPDATE bids SET bid_status = 'Accepted' WHERE bid_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Check that the case exists
+        if (result.length == 0) {
+            res.status(400).json('Case not found.');
+            return;
+        } else {
+            console.log(result);
+
+            // Check if bid already been accepted
+            if (result.bid_status == 'Accepted') {
+                res.status(400).json('Bid already accepted.');
+                return;
+            }
+
+            // Update Case
+            res.status(200).json(result);
+        }
+    });
+});
+
+// Delete Bid
+app.delete('/api/bids/delete/:id', (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    // Delete Bid
+    let sql = `DELETE FROM bids WHERE bid_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Check that the case exists
+        if (result.length == 0) {
+            res.status(400).json('Case not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// List of all Bids
+app.get('/api/bids/all', (req, res) => {
+    let sql = 'SELECT * FROM bids';
+
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
+
+        // JSON Response
+        res.status(200).json(results);
+    });
+});
+
+// Get Bid by ID
+app.get('/api/bids/:id', (req, res) => {
+    // Get ID
+    let id = req.params.id;
+
+    // Check if ID is empty
+    if (id == '' || id == null) {
+        res.status(400).json('Please fill in all fields.');
+        return;
+    }
+
+    // Check that the ID is a number
+    if (isNaN(id)) {
+        res.status(400).json('ID is not a number');
+        return;
+    }
+
+    let sql = `SELECT * FROM bids WHERE bid_id = ${id}`;
+    
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json('Bid not found.');
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
 
 // *****************************************************
 // PARAPLANNERS
