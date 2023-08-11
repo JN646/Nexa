@@ -9,6 +9,7 @@
 - api/cases/create
 - api/cases/update/:id
 - api/cases/delete/:id
+- api/cases/bids/:id
 
 ### Paraplanners
 
@@ -30,6 +31,8 @@
 
 - api/bids/all
 - api/bids/:id
+- api/bids/paraplanner/:id
+- api/bids/adviser/:id
 - api/bids/create
 - api/bids/update/:id
 - api/bids/delete/:id
