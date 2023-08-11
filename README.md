@@ -49,3 +49,4 @@
 - api/reviews/delete/:id
 - api/reviews/adviser/:id
 - api/reviews/paraplanner/:id
+- api/reviews/total

@@ -1611,6 +1611,27 @@ app.delete("/api/reviews/delete/:id", (req, res) => {
   });
 });
 
+// Total number of reviews
+app.get("/api/reviews/total", (req, res) => {
+
+    // Get total number of reviews
+    let sql = `SELECT COUNT(*) AS total FROM reviews`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
 // *****************************************************
 // SERVER
 // *****************************************************
