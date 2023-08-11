@@ -9,6 +9,7 @@ const mysql = require('mysql');
 // System Settings
 const port = 3000;
 const consoleLogging = false;
+const apiKey = '6bc32663-fb4f-4b8b-86e7-f08faa2cf302';
 
 const app = express();
 
@@ -41,7 +42,7 @@ db.connect((err) => {
 app.use((req, res, next) => {
     // Console Logging
     if (consoleLogging == true) {
-        console.log(req.method + ' ' + req.url);
+        console.log(req.method + ' ' + req.url + ' ' + res.statusCode);
     }
 
     next();
@@ -51,7 +52,8 @@ app.use((req, res, next) => {
 app.use('/api', (req, res, next) => {
     let post = {
         log_method: req.method,
-        log_url: req.url
+        log_url: req.url,
+        log_status: res.statusCode
     };
 
     let sql = 'INSERT INTO api_logs SET ?';
@@ -65,6 +67,19 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
+// *****************************************************
+// MIDDLEWARE
+// *****************************************************
+
+// Check for API Key
+app.use((req, res, next) => {
+    if (req.query.apiKey == apiKey) {
+        next();
+    } else {
+        res.status(401).json('Invalid API Key');
+    }
+});
+
 // Trim and sanitize all inputs
 app.use((req, res, next) => {
     // Trim all inputs
@@ -72,7 +87,7 @@ app.use((req, res, next) => {
         req.body[key] = req.body[key].trim();
     }
 
-    // Sanitize all inputs
+    // Sanitise all inputs
     for (let key in req.body) {
         req.body[key] = req.sanitize(req.body[key]);
     }
