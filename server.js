@@ -204,6 +204,26 @@ app.get("/api/cases/all", (req, res) => {
     });
 });
 
+// Get all unassigned cases
+app.get("/api/cases/unassigned", (req, res) => {
+    let sql =
+      "SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname FROM work_case LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE work_case.case_bid_status = 'Unassigned'";
+  
+      const query = db.query(sql, (err, result) => {
+          if (err) {
+              throw err;
+          }
+  
+          // Console Logging
+          if (process.env.consoleLogging == true) {
+              console.log(result);
+          }
+  
+          // JSON Response
+          res.status(200).json(result);
+      });
+  });
+
 // Nexa Core API - Get Case by ID
 app.get("/api/cases/:id", [
     param("id").isInt().withMessage("ID must be an integer"),
@@ -213,7 +233,7 @@ app.get("/api/cases/:id", [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const sql = `SELECT * FROM work_case WHERE case_id = ${req.params.id}`;
+    const sql = `SELECT work_case.*, ad_firstname, ad_lastname FROM work_case LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE case_id = ${req.params.id}`;
 
     const query = db.query(sql, (err, result) => {
         if (err) {
