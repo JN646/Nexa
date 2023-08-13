@@ -187,246 +187,211 @@ app.get("/api/cases/all", (req, res) => {
   let sql =
     "SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname FROM work_case LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id";
 
-  let query = db.query(sql, (err, results) => {
-    if (err) {
-      throw err;
-    }
+    const query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
 
-    // JSON Response
-    res.status(200).json(results);
-  });
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Nexa Core API - Get Case by ID
-app.get("/api/cases/:id", (req, res) => {
-  let sql = `SELECT * FROM work_case WHERE case_id = ${req.params.id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/cases/:id", [
+    param("id").isInt().withMessage("ID must be an integer"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+    const sql = `SELECT * FROM work_case WHERE case_id = ${req.params.id}`;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    const query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Create Case
-app.post("/api/cases/create", (req, res) => {
-  // Get variables
-  let case_pp_id = req.body.case_pp_id;
-  let case_ad_id = req.body.case_ad_id;
-  let case_due_date = req.body.case_due_date;
-  let case_type = req.body.case_type;
-  let case_bid_price = req.body.case_bid_price;
-  let case_bid_status = req.body.case_bid_status;
-
-  // Check if variables are empty
-  if (
-    case_ad_id == "" ||
-    case_due_date == "" ||
-    case_type == "" ||
-    case_bid_price == "" ||
-    case_bid_status == ""
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (
-    case_ad_id == null ||
-    case_due_date == null ||
-    case_type == null ||
-    case_bid_price == null ||
-    case_bid_status == null
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are numbers
-  if (isNaN(case_pp_id) || isNaN(case_ad_id) || isNaN(case_bid_price)) {
-    res.status(400).json("Please enter a number.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    case_pp_id: case_pp_id,
-    case_ad_id: case_ad_id,
-    case_due_date: case_due_date,
-    case_type: case_type,
-    case_bid_price: case_bid_price,
-    case_bid_status: case_bid_status,
-  };
-
-  let sql = "INSERT INTO work_case SET ?";
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
+app.post("/api/cases/create", [
+    body("case_pp_id").optional().isInt().withMessage("Case PP ID must be an integer"),
+    body("case_ad_id").isInt().withMessage("Case AD ID is required and must be an integer"),
+    body("case_due_date").isISO8601().withMessage("Case due date is required and must be in ISO8601 format"),
+    body("case_type").isString().withMessage("Case type is required and must be a string"),
+    body("case_bid_price").isDecimal().withMessage("Case bid price is required and must be a decimal"),
+    body("case_bid_status").isString().withMessage("Case bid status is required and must be a string"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    const {
+        case_pp_id,
+        case_ad_id,
+        case_due_date,
+        case_type,
+        case_bid_price,
+        case_bid_status,
+    } = req.body;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Create array
+    const post = {
+        case_pp_id,
+        case_ad_id,
+        case_due_date,
+        case_type,
+        case_bid_price,
+        case_bid_status,
+    };
+
+    const sql = "INSERT INTO work_case SET ?";
+
+    const query = db.query(sql, post, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Update Case
-app.put("/api/cases/update/:id", (req, res) => {
-  // Get variables
-  let case_pp_id = req.body.case_pp_id;
-  let case_ad_id = req.body.case_ad_id;
-  let case_due_date = req.body.case_due_date;
-  let case_type = req.body.case_type;
-  let case_bid_price = req.body.case_bid_price;
-  let case_bid_status = req.body.case_bid_status;
-  let case_id = req.params.id;
-
-  // Check if ID is empty
-  if (case_id == "" || case_id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(case_id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Check if variables are empty
-  if (
-    case_ad_id == "" ||
-    case_due_date == "" ||
-    case_type == "" ||
-    case_bid_price == "" ||
-    case_bid_status == ""
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (
-    case_ad_id == null ||
-    case_due_date == null ||
-    case_type == null ||
-    case_bid_price == null ||
-    case_bid_status == null
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are numbers
-  if (isNaN(case_ad_id) || isNaN(case_bid_price)) {
-    res.status(400).json("Please enter a number.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    case_pp_id: case_pp_id,
-    case_ad_id: case_ad_id,
-    case_due_date: case_due_date,
-    case_type: case_type,
-    case_bid_price: case_bid_price,
-    case_bid_status: case_bid_status,
-    case_id: case_id,
-  };
-
-  // Update Case
-  let sql = `UPDATE work_case SET case_pp_id = ?, case_ad_id = ?, case_due_date = ?, case_type = ?, case_bid_price = ?, case_bid_status = ? WHERE case_id = ?`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.put("/api/cases/update/:id", [
+    param("id").isInt().withMessage("ID must be an integer"),
+    body("case_pp_id").optional().isInt().withMessage("Case PP ID must be an integer"),
+    body("case_ad_id").isInt().withMessage("Case AD ID is required and must be an integer"),
+    body("case_due_date").isISO8601().withMessage("Case due date is required and must be in ISO8601 format"),
+    body("case_type").isString().withMessage("Case type is required and must be a string"),
+    body("case_bid_price").isDecimal().withMessage("Case bid price is required and must be a decimal"),
+    body("case_bid_status").isString().withMessage("Case bid status is required and must be a string"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    const {
+        case_pp_id,
+        case_ad_id,
+        case_due_date,
+        case_type,
+        case_bid_price,
+        case_bid_status,
+    } = req.body;
 
-    // Check that the case exists
-    if (result.length == 0) {
-      res.status(400).json("Case not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
+    const case_id = req.params.id;
+
+    // Create array
+    const post = {
+        case_pp_id,
+        case_ad_id,
+        case_due_date,
+        case_type,
+        case_bid_price,
+        case_bid_status,
+        case_id,
+    };
+
+    // Update Case
+    const sql = `UPDATE work_case SET case_pp_id = ?, case_ad_id = ?, case_due_date = ?, case_type = ?, case_bid_price = ?, case_bid_status = ? WHERE case_id = ?`;
+
+    const query = db.query(sql, post, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // Check that the case exists
+        if (result.length == 0) {
+            res.status(400).json("Case not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
 });
 
 // Delete Case
-app.delete("/api/cases/delete/:id", (req, res) => {
-  let sql = `DELETE FROM work_case WHERE case_id = ${req.params.id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.delete("/api/cases/delete/:id", [
+    param("id").isInt().withMessage("ID must be an integer"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    const sql = `DELETE FROM work_case WHERE case_id = ${req.params.id}`;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    const query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Cases Bids
-app.get("/api/cases/bids/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Get Bids
-  let sql = `SELECT * FROM bids WHERE bid_case_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/cases/bids/:id", [
+    param("id").isInt().withMessage("ID must be an integer"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get ID
+    const id = req.params.id;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Get Bids
+    const sql = `SELECT * FROM bids WHERE bid_case_id = ${id}`;
+
+    const query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // *****************************************************
@@ -434,405 +399,334 @@ app.get("/api/cases/bids/:id", (req, res) => {
 // *****************************************************
 
 // Create Bid
-app.post("/api/bids/create", (req, res) => {
-  // Get variables
-  let bid_case_id = req.body.bid_case_id;
-  let bid_pp_id = req.body.bid_pp_id;
-  let bid_ad_id = req.body.bid_ad_id;
-  let bid_price = req.body.bid_price;
-  let bid_status = req.body.bid_status;
+app.post("/api/bids/create", 
+    [
+        body("bid_case_id").notEmpty().withMessage("Please fill in all fields.").isInt().withMessage("ID is not a number"),
+        body("bid_pp_id").notEmpty().withMessage("Please fill in all fields."),
+        body("bid_ad_id").notEmpty().withMessage("Please fill in all fields."),
+        body("bid_price").notEmpty().withMessage("Please fill in all fields.").isFloat({ min: 30 }).withMessage("Please enter a bid over £30."),
+        body("bid_status").notEmpty().withMessage("Please fill in all fields."),
+    ],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-  // Check if variables are empty
-  if (
-    bid_case_id == "" ||
-    bid_pp_id == "" ||
-    bid_ad_id == "" ||
-    bid_price == "" ||
-    bid_status == ""
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
+        // Get variables
+        let bid_case_id = req.body.bid_case_id;
+        let bid_pp_id = req.body.bid_pp_id;
+        let bid_ad_id = req.body.bid_ad_id;
+        let bid_price = req.body.bid_price;
+        let bid_status = req.body.bid_status;
 
-  // Check that the variables are not empty
-  if (
-    bid_case_id == null ||
-    bid_pp_id == null ||
-    bid_ad_id == null ||
-    bid_price == null ||
-    bid_status == null
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
+        // Create array
+        let post = {
+            bid_case_id: bid_case_id,
+            bid_pp_id: bid_pp_id,
+            bid_ad_id: bid_ad_id,
+            bid_price: bid_price,
+            bid_status: bid_status,
+        };
 
-  // Check that the variables are numbers
-  if (
-    isNaN(bid_case_id) ||
-    isNaN(bid_pp_id) ||
-    isNaN(bid_ad_id) ||
-    isNaN(bid_price)
-  ) {
-    res.status(400).json("Please enter a number.");
-    return;
-  }
+        let sql = "INSERT INTO bids SET ?";
 
-  // Check that the bid price is not a negative number
-  if (bid_price < 0) {
-    res.status(400).json("Please enter a positive number.");
-    return;
-  }
+        let query = db.query(sql, post, (err, result) => {
+            if (err) {
+                throw err;
+            }
 
-  // Check that the bid price is over 30
-  if (bid_price < 30) {
-    res.status(400).json("Please enter a bid over £30.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    bid_case_id: bid_case_id,
-    bid_pp_id: bid_pp_id,
-    bid_ad_id: bid_ad_id,
-    bid_price: bid_price,
-    bid_status: bid_status,
-  };
-
-  let sql = "INSERT INTO bids SET ?";
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
+            // Check that the case exists
+            if (result.length == 0) {
+                res.status(400).json("Case not found.");
+                return;
+            } else {
+                res.status(200).json(result);
+            }
+        });
     }
+);
 
-    // Check that the case exists
-    if (result.length == 0) {
-      res.status(400).json("Case not found.");
-      return;
-    } else {
-      res.status(200).json(result);
+// Update Bid by ID
+app.put(
+    "/api/bids/update/:id",
+    [
+        param("id").isInt().withMessage("ID is not a number"),
+        body("bid_case_id").notEmpty().withMessage("Please fill in all fields."),
+        body("bid_pp_id").notEmpty().withMessage("Please fill in all fields."),
+        body("bid_ad_id").notEmpty().withMessage("Please fill in all fields."),
+        body("bid_price")
+            .notEmpty()
+            .withMessage("Please fill in all fields.")
+            .isFloat({ min: 30 })
+            .withMessage("Please enter a bid over £30."),
+        body("bid_status").notEmpty().withMessage("Please fill in all fields."),
+    ],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        let bid_ad_id = req.body.bid_ad_id;
+        let bid_price = req.body.bid_price;
+        let bid_status = req.body.bid_status;
+        let bid_id = req.params.id;
+        let bid_case_id = req.body.bid_case_id;
+        let bid_pp_id = req.body.bid_pp_id;
+
+        // Create array
+        let post = {
+            bid_case_id: bid_case_id,
+            bid_pp_id: bid_pp_id,
+            bid_ad_id: bid_ad_id,
+            bid_price: bid_price,
+            bid_status: bid_status,
+            bid_id: bid_id,
+        };
+
+        // Update Bid
+        let sql = `UPDATE bids SET bid_case_id = ?, bid_pp_id = ?, bid_ad_id = ?, bid_price = ?, bid_status = ? WHERE bid_id = ?`;
+
+        let query = db.query(sql, post, (err, result) => {
+            if (err) {
+                throw err;
+            }
+
+            // Check that the case exists
+            if (result.affectedRows == 0) {
+                res.status(400).json("Case not found.");
+                return;
+            } else {
+                res.status(200).json(result);
+            }
+        });
     }
-  });
-});
-
-// Update Bid
-app.put("/api/bids/update/:id", (req, res) => {
-  // Get variables
-  let bid_case_id = req.body.bid_case_id;
-  let bid_pp_id = req.body.bid_pp_id;
-  let bid_ad_id = req.body.bid_ad_id;
-  let bid_price = req.body.bid_price;
-  let bid_status = req.body.bid_status;
-  let bid_id = req.params.id;
-
-  // Check if ID is empty
-  if (bid_id == "" || bid_id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(bid_id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Check if variables are empty
-  if (
-    bid_case_id == "" ||
-    bid_pp_id == "" ||
-    bid_ad_id == "" ||
-    bid_price == "" ||
-    bid_status == ""
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (
-    bid_case_id == null ||
-    bid_pp_id == null ||
-    bid_ad_id == null ||
-    bid_price == null ||
-    bid_status == null
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are numbers
-  if (
-    isNaN(bid_case_id) ||
-    isNaN(bid_pp_id) ||
-    isNaN(bid_ad_id) ||
-    isNaN(bid_price)
-  ) {
-    res.status(400).json("Please enter a number.");
-    return;
-  }
-
-  // Check that the bid price is not a negative number
-  if (bid_price < 0) {
-    res.status(400).json("Please enter a positive number.");
-    return;
-  }
-
-  // Check that the bid price is over 30
-  if (bid_price < 30) {
-    res.status(400).json("Please enter a bid over £30.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    bid_case_id: bid_case_id,
-    bid_pp_id: bid_pp_id,
-    bid_ad_id: bid_ad_id,
-    bid_price: bid_price,
-    bid_status: bid_status,
-    bid_id: bid_id,
-  };
-
-  // Update Bid
-  let sql = `UPDATE bids SET bid_case_id = ?, bid_pp_id = ?, bid_ad_id = ?, bid_price = ?, bid_status = ? WHERE bid_id = ?`;
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
-    }
-
-    // Check that the case exists
-    if (result.length == 0) {
-      res.status(400).json("Case not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
-});
+);
 
 // Accept Bid by ID
-app.put("/api/bids/accept/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
+app.put(
+    "/api/bids/accept/:id",
+    [param("id").isInt().withMessage("ID is not a number")],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
+        // Get ID
+        let id = req.params.id;
 
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
+        // Update Bid
+        let sql = `UPDATE bids SET bid_status = 'Accepted' WHERE bid_id = ${id}`;
 
-  // Update Bid
-  let sql = `UPDATE bids SET bid_status = 'Accepted' WHERE bid_id = ${id}`;
+        let query = db.query(sql, (err, result) => {
+            if (err) {
+                throw err;
+            }
 
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+            // Check that the case exists
+            if (result.affectedRows == 0) {
+                res.status(400).json("Case not found.");
+                return;
+            } else {
+                console.log(result);
+
+                // Check if bid already been accepted
+                if (result.bid_status == "Accepted") {
+                    res.status(400).json("Bid already accepted.");
+                    return;
+                }
+
+                // Update Case
+                res.status(200).json(result);
+            }
+        });
     }
-
-    // Check that the case exists
-    if (result.length == 0) {
-      res.status(400).json("Case not found.");
-      return;
-    } else {
-      console.log(result);
-
-      // Check if bid already been accepted
-      if (result.bid_status == "Accepted") {
-        res.status(400).json("Bid already accepted.");
-        return;
-      }
-
-      // Update Case
-      res.status(200).json(result);
-    }
-  });
-});
+);
 
 // Delete Bid
-app.delete("/api/bids/delete/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
+app.delete(
+    "/api/bids/delete/:id",
+    [param("id").isInt().withMessage("ID is not a number")],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
+        // Get ID
+        let id = req.params.id;
 
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
+        // Delete Bid
+        let sql = `DELETE FROM bids WHERE bid_id = ${id}`;
 
-  // Delete Bid
-  let sql = `DELETE FROM bids WHERE bid_id = ${id}`;
+        let query = db.query(sql, (err, result) => {
+            if (err) {
+                throw err;
+            }
 
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+            // Check that the case exists
+            if (result.affectedRows == 0) {
+                res.status(400).json("Case not found.");
+                return;
+            } else {
+                res.status(200).json(result);
+            }
+        });
     }
-
-    // Check that the case exists
-    if (result.length == 0) {
-      res.status(400).json("Case not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
-});
+);
 
 // List of all Bids
 app.get("/api/bids/all", (req, res) => {
-  let sql = "SELECT * FROM bids";
+    let sql = "SELECT * FROM bids";
 
-  let query = db.query(sql, (err, results) => {
-    if (err) {
-      throw err;
-    }
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
 
-    // JSON Response
-    res.status(200).json(results);
-  });
+        // JSON Response
+        res.status(200).json(results);
+    });
 });
 
 // Get Bid by ID
-app.get("/api/bids/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
+app.get(
+    "/api/bids/:id",
+    [param("id").isInt().withMessage("ID is not a number")],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
+        // Get ID
+        let id = req.params.id;
 
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
+        let sql = `SELECT * FROM bids WHERE bid_id = ${id}`;
 
-  let sql = `SELECT * FROM bids WHERE bid_id = ${id}`;
+        let query = db.query(sql, (err, result) => {
+            if (err) {
+                throw err;
+            }
 
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+            // If result not found
+            if (result.length == 0) {
+                res.status(400).json("Bid not found.");
+                return;
+            } else {
+                res.status(200).json(result);
+            }
+        });
     }
-
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Bid not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
-});
+);
 
 // Count number of bids by case ID
-app.get("/api/bids/count/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
+app.get(
+    "/api/bids/count/:id",
+    [param("id").isInt().withMessage("ID is not a number")],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
+        // Get ID
+        let id = req.params.id;
 
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
+        let sql = `SELECT COUNT(*) AS bid_count FROM bids WHERE bid_case_id = ${id}`;
 
-  let sql = `SELECT COUNT(*) AS bid_count FROM bids WHERE bid_case_id = ${id}`;
+        let query = db.query(sql, (err, result) => {
+            if (err) {
+                throw err;
+            }
 
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+            // If result not found
+            if (result.length == 0) {
+                res.status(400).json("Bid not found.");
+                return;
+            } else {
+                res.status(200).json(result);
+            }
+        });
     }
-
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Bid not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
-});
+);
 
 // *****************************************************
 // PARAPLANNERS
 // *****************************************************
 
-// Nexa Core API - Get Case by Paraplanner id
-app.get("/api/cases/paraplanner/:id", (req, res) => {
-  let sql = `SELECT * FROM work_case WHERE case_pp_id = ${req.params.id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+// Get Case by Paraplanner id
+app.get("/api/cases/paraplanner/:id", [
+    param('id').isInt().withMessage('ID must be an integer')
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+    let sql = `SELECT * FROM work_case WHERE case_pp_id = ${req.params.id}`;
 
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Paraplanner has no cases.");
-      return;
-    }
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Paraplanner has no cases.");
+            return;
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
-// Nexa Core API - Get Case by Adviser id
-app.get("/api/cases/adviser/:id", (req, res) => {
-  let sql = `SELECT * FROM work_case WHERE case_ad_id = ${req.params.id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+// Get Case by Adviser id
+app.get("/api/cases/adviser/:id", [
+    param('id').isInt().withMessage('ID must be an integer')
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+    let sql = `SELECT * FROM work_case WHERE case_ad_id = ${req.params.id}`;
 
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Adviser not found.");
-      return;
-    }
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Adviser not found.");
+            return;
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
-// Nexa Core API - Get Cases that do not have a Paraplanner assigned
+// Get Cases that do not have a Paraplanner assigned
 app.get("/api/cases/paraplanner/none", (req, res) => {
   let sql = `SELECT * FROM work_case WHERE case_pp_id IS NULL OR case_pp_id = ''`;
 
@@ -853,246 +747,202 @@ app.get("/api/cases/paraplanner/none", (req, res) => {
 
 // List of all Paraplanners
 app.get("/api/paraplanners/all", (req, res) => {
-  let sql = "SELECT * FROM paraplanners";
+    let sql = "SELECT * FROM paraplanners";
 
-  let query = db.query(sql, (err, results) => {
-    if (err) {
-      throw err;
-    }
+    let query = db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+        // JSON Response
+        res.status(200).json(results);
+    });
 });
 
 // Get Paraplanner by ID
-app.get("/api/paraplanners/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  let sql = `SELECT * FROM paraplanners WHERE pp_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/paraplanners/:id", [
+    param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number")
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Adviser not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
+    // Get ID
+    let id = req.params.id;
+
+    let sql = `SELECT * FROM paraplanners WHERE pp_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Adviser not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
 });
 
 // Create Paraplanner
-app.post("/api/paraplanners/create", (req, res) => {
-  // Get variables
-  let pp_firstname = req.body.pp_firstname;
-  let pp_lastname = req.body.pp_lastname;
-  let pp_email = req.body.pp_email;
-
-  // Check if variables are empty
-  if (pp_firstname == "" || pp_lastname == "" || pp_email == "") {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (pp_firstname == null || pp_lastname == null || pp_email == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Ensure that the email is valid
-  if (pp_email.indexOf("@") == -1 || pp_email.indexOf(".") == -1) {
-    res.status(400).json("Please enter a valid email address.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    pp_firstname: pp_firstname,
-    pp_lastname: pp_lastname,
-    pp_email: pp_email,
-  };
-
-  let sql = "INSERT INTO paraplanners SET ?";
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
+app.post("/api/paraplanners/create", [
+    body("pp_firstname").notEmpty().withMessage("First name is required"),
+    body("pp_lastname").notEmpty().withMessage("Last name is required"),
+    body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address")
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get variables
+    let pp_firstname = req.body.pp_firstname;
+    let pp_lastname = req.body.pp_lastname;
+    let pp_email = req.body.pp_email;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Create array
+    let post = {
+        pp_firstname: pp_firstname,
+        pp_lastname: pp_lastname,
+        pp_email: pp_email,
+    };
+
+    let sql = "INSERT INTO paraplanners SET ?";
+
+    let query = db.query(sql, post, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Update Paraplanner
-app.put("/api/paraplanners/update/:id", (req, res) => {
-  // Get variables
-  let pp_firstname = req.body.pp_firstname;
-  let pp_lastname = req.body.pp_lastname;
-  let pp_email = req.body.pp_email;
-  let pp_id = req.params.id;
-
-  // Check if ID is empty
-  if (pp_id == "" || pp_id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(pp_id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Check if variables are empty
-  if (pp_firstname == "" || pp_lastname == "" || pp_email == "") {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (pp_firstname == null || pp_lastname == null || pp_email == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Ensure that the email is valid
-  if (pp_email.indexOf("@") == -1 || pp_email.indexOf(".") == -1) {
-    res.status(400).json("Please enter a valid email address.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    pp_firstname: pp_firstname,
-    pp_lastname: pp_lastname,
-    pp_email: pp_email,
-    pp_id: pp_id,
-  };
-
-  // Update Paraplanner
-  let sql = `UPDATE paraplanners SET pp_firstname = ?, pp_lastname = ?, pp_email = ? WHERE pp_id = ?`;
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
+app.put("/api/paraplanners/update/:id", [
+    param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number"),
+    body("pp_firstname").notEmpty().withMessage("First name is required"),
+    body("pp_lastname").notEmpty().withMessage("Last name is required"),
+    body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address")
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get variables
+    let pp_firstname = req.body.pp_firstname;
+    let pp_lastname = req.body.pp_lastname;
+    let pp_email = req.body.pp_email;
+    let pp_id = req.params.id;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Create array
+    let post = {
+        pp_firstname: pp_firstname,
+        pp_lastname: pp_lastname,
+        pp_email: pp_email,
+        pp_id: pp_id,
+    };
+
+    // Update Paraplanner
+    let sql = `UPDATE paraplanners SET pp_firstname = ?, pp_lastname = ?, pp_email = ? WHERE pp_id = ?`;
+
+    let query = db.query(sql, post, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Delete Paraplanner
-app.delete("/api/paraplanners/delete/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  let sql = `DELETE FROM paraplanners WHERE pp_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.delete("/api/paraplanners/delete/:id", [
+    param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number")
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get ID
+    let id = req.params.id;
 
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Paraplanner not found.");
-      return;
-    } else {
-      res.status(200).json("Paraplanner deleted.");
-    }
-  });
+    let sql = `DELETE FROM paraplanners WHERE pp_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Paraplanner not found.");
+            return;
+        } else {
+            res.status(200).json("Paraplanner deleted.");
+        }
+    });
 });
 
 // Get paraplanner star rating
-app.get("/api/paraplanners/star-rating/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  let sql = `SELECT AVG(rating) AS rating FROM reviews WHERE pp_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/paraplanners/star-rating/:id", [
+    param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number")
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get ID
+    let id = req.params.id;
 
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Paraplanner not found.");
-      return;
-    } else {
-      res.status(200).json(result);
-    }
-  });
+    let sql = `SELECT AVG(rating) AS rating FROM reviews WHERE pp_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Paraplanner not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
 });
 
 // *****************************************************
@@ -1101,55 +951,117 @@ app.get("/api/paraplanners/star-rating/:id", (req, res) => {
 
 // List of all Advisers
 app.get("/api/advisers/all", (req, res) => {
-  let sql = "SELECT * FROM advisers";
+    let sql = "SELECT * FROM advisers";
 
-  let query = db.query(sql, (err, results) => {
-    if (err) {
-      throw err;
-    }
+    db.query(sql, (err, results) => {
+        if (err) {
+            throw err;
+        }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(results);
-    }
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
 
-    // JSON Response
-    res.status(200).json(results);
-  });
+        // JSON Response
+        res.status(200).json(results);
+    });
 });
 
 // Get Adviser by ID
-app.get("/api/advisers/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  let sql = `SELECT * FROM advisers WHERE ad_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/advisers/:id", [
+    param('id').notEmpty().isInt(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Adviser not found.");
-      return;
-    } else {
-      res.status(200).json(result);
+    const id = req.params.id;
+    const sql = `SELECT * FROM advisers WHERE ad_id = ${id}`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        if (result.length == 0) {
+            res.status(404).json({ error: "Adviser not found." });
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// Get Adviser by ID
+app.get("/api/advisers/:id", [
+    param('id').notEmpty().isInt(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
-  });
+
+    const id = req.params.id;
+    const sql = `SELECT * FROM advisers WHERE ad_id = ${id}`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        if (result.length == 0) {
+            res.status(404).json({ error: "Adviser not found." });
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// Update Adviser
+app.put("/api/advisers/update/:id", [
+    param('id').notEmpty().isInt(),
+    body('ad_firstname').optional().trim().notEmpty(),
+    body('ad_lastname').optional().trim().notEmpty(),
+    body('ad_email')
+        .optional()
+        .trim()
+        .isEmail()
+        .custom(validEmailDomain)
+        .custom(async (value, { req }) => {
+            const existingEmail = await db.query(
+                "SELECT ad_email FROM advisers WHERE ad_email = ? AND ad_id != ?",
+                [value, req.params.id]
+            );
+            if (existingEmail.length > 0) {
+                throw new Error('Email is already in use');
+            }
+            return value;
+        }),
+    body('ad_role').optional().trim(),
+    body('ad_tel').optional().trim(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const id = req.params.id;
+    const { ad_firstname, ad_lastname, ad_email, ad_role, ad_tel } = req.body;
+    const sql = `UPDATE advisers SET ad_firstname = ?, ad_lastname = ?, ad_email = ?, ad_role = ?, ad_tel = ? WHERE ad_id = ?`;
+    const values = [ad_firstname, ad_lastname, ad_email, ad_role, ad_tel, id];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        if (result.affectedRows == 0) {
+            res.status(404).json({ error: "Adviser not found." });
+        } else {
+            res.status(200).json({ message: "Adviser updated successfully." });
+        }
+    });
 });
 
 // Create Adviser
@@ -1304,80 +1216,64 @@ app.delete("/api/advisers/delete/:id", [
       // JSON Response
       res.json(result);
     });
-  });
+});
 
 // Bids by paraplanner id
-app.get("/api/bids/paraplanner/:id", (req, res) => {
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Get Bids
-  let sql = `SELECT * FROM bids WHERE bid_pp_id = ${req.params.id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/bids/paraplanner/:id", [
+    param('id').isInt().withMessage('ID must be an integer'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
+    const id = req.params.id;
 
-      // JSON Response
-      res.status(200).json(result);
+    // Get Bids
+    const sql = `SELECT * FROM bids WHERE bid_pp_id = ?`;
+    try {
+        const result = await db.query(sql, [id]);
+
+        // Console Logging
+        if (process.env.consoleLogging === true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Database error" });
     }
-
-    // JSON Response
-    res.status(200).json(result);
-  });
 });
 
 // Bids by adviser id
-app.get("/api/bids/adviser/:id", (req, res) => {
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Get Bids
-  let sql = `SELECT * FROM bids WHERE bid_ad_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/bids/adviser/:id", [
+    param('id').isInt(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
+    let id = req.params.id;
 
-      // JSON Response
-      res.status(200).json(result);
-    }
+    // Get Bids
+    let sql = `SELECT * FROM bids WHERE bid_ad_id = ${id}`;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // *****************************************************
@@ -1405,256 +1301,182 @@ app.get("/api/reviews/all", (req, res) => {
 });
 
 // Get reviews by adviser id
-app.get("/api/reviews/adviser/:id", (req, res) => {
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Get Reviews
-  let sql = `SELECT * FROM reviews WHERE review_ad_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/reviews/adviser/:id", [
+    param('id').notEmpty().isInt(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    const id = req.params.id;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Get Reviews
+    const sql = `SELECT * FROM reviews WHERE review_ad_id = ?`;
+    const values = [id];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Get reviews by paraplanner id
-app.get("/api/reviews/paraplanner/:id", (req, res) => {
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Get Reviews
-  let sql = `SELECT * FROM reviews WHERE review_pp_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.get("/api/reviews/paraplanner/:id", [
+    param('id').notEmpty().isInt(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    const id = req.params.id;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Get Reviews
+    const sql = `SELECT * FROM reviews WHERE review_pp_id = ?`;
+    const values = [id];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
-// Post a review
-app.post("/api/reviews/create", (req, res) => {
-  // Get variables
-  let review_pp_id = req.body.review_pp_id;
-  let review_ad_id = req.body.review_ad_id;
-  let review_case_id = req.body.review_case_id;
-  let review_stars = req.body.review_stars;
-  let review_comment = req.body.review_comment;
-
-  // Check if variables are empty
-  if (
-    review_pp_id == "" ||
-    review_pp_id == null ||
-    review_ad_id == "" ||
-    review_ad_id == null ||
-    review_case_id == "" ||
-    review_case_id == null ||
-    review_stars == "" ||
-    review_stars == null ||
-    review_comment == "" ||
-    review_comment == null
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(review_pp_id) || isNaN(review_ad_id) || isNaN(review_case_id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Check that the stars is a number
-  if (isNaN(review_stars)) {
-    res.status(400).json("Stars is not a number");
-    return;
-  }
-
-  // Check that the stars is a number
-  if (review_stars > 5 || review_stars < 1) {
-    res.status(400).json("Stars must be between 1 and 5");
-    return;
-  }
-
-  // Check that the comment is less than 1000 characters
-  if (review_comment.length > 1000) {
-    res.status(400).json("Comment must be less than 1000 characters");
-    return;
-  }
-
-  // Create Review
-  let sql = `INSERT INTO reviews (review_pp_id, review_ad_id, review_case_id, review_stars, review_comment) VALUES (${review_pp_id}, ${review_ad_id}, ${review_case_id}, ${review_stars}, '${review_comment}')`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+// Create a review
+app.post("/api/reviews/create", [
+    body('review_pp_id').notEmpty().isInt(),
+    body('review_ad_id').notEmpty().isInt(),
+    body('review_case_id').notEmpty().isInt(),
+    body('review_stars').notEmpty().isInt().isIn([1, 2, 3, 4, 5]),
+    body('review_comment').notEmpty().isLength({ max: 1000 }),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    const { review_pp_id, review_ad_id, review_case_id, review_stars, review_comment } = req.body;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Create Review
+    const sql = `INSERT INTO reviews (review_pp_id, review_ad_id, review_case_id, review_stars, review_comment) VALUES (?, ?, ?, ?, ?)`;
+    const values = [review_pp_id, review_ad_id, review_case_id, review_stars, review_comment];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Update a review
-app.put("/api/reviews/update/:id", (req, res) => {
-  // Get variables
-  let id = req.params.id;
-  let review_stars = req.body.review_stars;
-  let review_comment = req.body.review_comment;
-
-  // Check if variables are empty
-  if (
-    id == "" ||
-    id == null ||
-    review_stars == "" ||
-    review_stars == null ||
-    review_comment == "" ||
-    review_comment == null
-  ) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Check that the stars is a number
-  if (isNaN(review_stars)) {
-    res.status(400).json("Stars is not a number");
-    return;
-  }
-
-  // Check that the stars is a number
-  if (review_stars > 5 || review_stars < 1) {
-    res.status(400).json("Stars must be between 1 and 5");
-    return;
-  }
-
-  // Check that the comment is less than 1000 characters
-  if (review_comment.length > 1000) {
-    res.status(400).json("Comment must be less than 1000 characters");
-    return;
-  }
-
-  // Update Review
-  let sql = `UPDATE reviews SET review_stars = ${review_stars}, review_comment = '${review_comment}' WHERE review_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.put("/api/reviews/update/:id", [
+    param('id').notEmpty().isInt(),
+    body('review_stars').notEmpty().isInt().isIn([1, 2, 3, 4, 5]),
+    body('review_comment').notEmpty().isLength({ max: 1000 }),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get variables
+    const { id } = req.params;
+    const { review_stars, review_comment } = req.body;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Update Review
+    const sql = `UPDATE reviews SET review_stars = ?, review_comment = ? WHERE review_id = ?`;
+    const values = [review_stars, review_comment, id];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Delete a review
-app.delete("/api/reviews/delete/:id", (req, res) => {
-  // Get variables
-  let id = req.params.id;
-
-  // Check if variables are empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Delete Review
-  let sql = `DELETE FROM reviews WHERE review_id = ${id}`;
-
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
+app.delete("/api/reviews/delete/:id", [
+    // Validate ID
+    body('id').notEmpty().isInt(),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+    // Get variables
+    let id = req.params.id;
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+    // Delete Review
+    let sql = `DELETE FROM reviews WHERE review_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Total number of reviews
 app.get("/api/reviews/total", (req, res) => {
-  // Get total number of reviews
-  let sql = `SELECT COUNT(*) AS total FROM reviews`;
+    // Get total number of reviews
+    let sql = `SELECT COUNT(*) AS total FROM reviews`;
 
-  let query = db.query(sql, (err, result) => {
-    if (err) {
-      throw err;
-    }
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
 
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
 
-    // JSON Response
-    res.status(200).json(result);
-  });
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // *****************************************************
