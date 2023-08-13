@@ -7,6 +7,8 @@ const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+const rateLimit = require("express-rate-limit");
+const { body, validationResult } = require("express-validator");
 
 // Load env vars
 require("dotenv").config();
@@ -14,6 +16,13 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Define a rate limiter to prevent excessive API requests
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+});
+app.use("/api", apiLimiter);
 
 // *****************************************************
 // DATABASE
@@ -50,19 +59,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Log all api requests to database
+// Middleware to log API requests
 app.use("/api", (req, res, next) => {
-  let post = {
+  const logEntry = {
     log_method: req.method,
     log_url: req.url,
     log_status: res.statusCode,
+    log_request: JSON.stringify(req.body),
+    log_response: JSON.stringify(res.body),
   };
 
-  let sql = "INSERT INTO api_logs SET ?";
-
-  let query = db.query(sql, post, (err, result) => {
+  db.query("INSERT INTO api_logs SET ?", logEntry, (err) => {
     if (err) {
-      throw err;
+      console.error("Error logging API request:", err);
     }
   });
 
@@ -74,11 +83,14 @@ app.use("/api", (req, res, next) => {
 // *****************************************************
 
 // Check for API Key
-app.use((req, res, next) => {
-  if (req.query.apiKey == process.env.apiKey) {
+app.use("/api", (req, res, next) => {
+  const apiKey = req.headers["x-api-key"]; // Change 'x-api-key' to your header key
+
+  // Replace 'YOUR_VALID_API_KEY' with your actual valid API key
+  if (apiKey === process.env.apiKey) {
     next();
   } else {
-    res.status(401).json("Invalid API Key");
+    res.status(401).json({ error: "Invalid API key" });
   }
 });
 
@@ -89,13 +101,37 @@ app.use((req, res, next) => {
     req.body[key] = req.body[key].trim();
   }
 
-  // Sanitise all inputs
-  // for (let key in req.body) {
-  //     req.body[key] = req.sanitize(req.body[key]);
-  // }
-
   next();
 });
+
+// Middleware to validate and sanitize inputs using express-validator
+app.use(
+  "/api",
+  [
+    // Trim and sanitize body inputs
+    (req, res, next) => {
+      for (const key in req.body) {
+        if (typeof req.body[key] === "string") {
+          req.body[key] = req.body[key].trim();
+        }
+      }
+      next();
+    },
+    // Use express-validator to sanitize and validate inputs
+    body().customSanitizer((value, { req }) => {
+      // Sanitize value here (e.g., escape HTML characters)
+      return value;
+    }),
+  ],
+  (req, res, next) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+);
 
 // *****************************************************
 // CORE PAGES
@@ -1114,6 +1150,8 @@ app.post("/api/advisers/create", (req, res) => {
   let ad_firstname = req.body.ad_firstname;
   let ad_lastname = req.body.ad_lastname;
   let ad_email = req.body.ad_email;
+  let ad_role = req.body.ad_role;
+  let ad_tel = req.body.ad_tel;
 
   // Check if variables are empty
   if (ad_firstname == "" || ad_lastname == "" || ad_email == "") {
@@ -1613,23 +1651,22 @@ app.delete("/api/reviews/delete/:id", (req, res) => {
 
 // Total number of reviews
 app.get("/api/reviews/total", (req, res) => {
+  // Get total number of reviews
+  let sql = `SELECT COUNT(*) AS total FROM reviews`;
 
-    // Get total number of reviews
-    let sql = `SELECT COUNT(*) AS total FROM reviews`;
+  let query = db.query(sql, (err, result) => {
+    if (err) {
+      throw err;
+    }
 
-    let query = db.query(sql, (err, result) => {
-        if (err) {
-            throw err;
-        }
+    // Console Logging
+    if (process.env.consoleLogging == true) {
+      console.log(result);
+    }
 
-        // Console Logging
-        if (process.env.consoleLogging == true) {
-            console.log(result);
-        }
-
-        // JSON Response
-        res.status(200).json(result);
-    });
+    // JSON Response
+    res.status(200).json(result);
+  });
 });
 
 // *****************************************************
