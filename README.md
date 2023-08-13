@@ -10,6 +10,7 @@
 - api/cases/update/:id
 - api/cases/delete/:id
 - api/cases/bids/:id
+- api/cases/bids/count/:id
 - api/cases/unassigned
 
 ### Paraplanners

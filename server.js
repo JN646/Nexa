@@ -58,6 +58,8 @@ app.use((req, res, next) => {
     console.log(req.method + " " + req.url + " " + res.statusCode);
   }
 
+  console.log(req.method + " " + req.url + " " + res.statusCode);
+
   next();
 });
 
@@ -264,17 +266,22 @@ app.post("/api/cases/create", [
             return true;
         }).withMessage("Case due date cannot be in the past"),
     body("case_type").isString().withMessage("Case type is required and must be a string"),
-        body("case_bid_price")
-            .isDecimal().withMessage("Case bid price is required and must be a decimal")
-            .custom((value, { req }) => {
-                if (value < 0) {
-                    return false;
-                }
-                if (value <= 30) {
-                    return false;
-                }
-                return true;
-            }).withMessage("Case bid price must be greater than 30 and cannot be negative"),
+    body("case_bid_price")
+        .isDecimal().withMessage("Case bid price is required and must be a decimal")
+        .custom((value, { req }) => {
+            if (value < 0) {
+                return false;
+            }
+            if (value <= 30) {
+                return false;
+            }
+            return true;
+        }).withMessage("Case bid price must be greater than 30 and cannot be negative"),
+    body("case_notes")
+        .isString()
+        .withMessage("Case notes is required")
+        .isLength({ max: 3000 })
+        .withMessage("Case notes cannot be longer than 3000 characters"),
     ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -286,6 +293,7 @@ app.post("/api/cases/create", [
         case_due_date,
         case_type,
         case_bid_price,
+        case_notes,
     } = req.body;
 
     // Create array
@@ -294,6 +302,7 @@ app.post("/api/cases/create", [
         case_due_date,
         case_type,
         case_bid_price,
+        case_notes,
     };
 
     const sql = "INSERT INTO work_case SET ?";
@@ -322,7 +331,13 @@ app.put("/api/cases/update/:id", [
     body("case_type").isString().withMessage("Case type is required and must be a string"),
     body("case_bid_price").isDecimal().withMessage("Case bid price is required and must be a decimal"),
     body("case_bid_status").isString().withMessage("Case bid status is required and must be a string"),
-], (req, res) => {
+    body("case_notes")
+        .optional()
+        .isString()
+        .withMessage("Case notes must be a string")
+        .isLength({ max: 3000 })
+        .withMessage("Case notes cannot be longer than 3000 characters"),
+    ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -335,6 +350,7 @@ app.put("/api/cases/update/:id", [
         case_type,
         case_bid_price,
         case_bid_status,
+        case_notes,
     } = req.body;
 
     const case_id = req.params.id;
@@ -347,11 +363,12 @@ app.put("/api/cases/update/:id", [
         case_type,
         case_bid_price,
         case_bid_status,
+        case_notes,
         case_id,
     };
 
     // Update Case
-    const sql = `UPDATE work_case SET case_pp_id = ?, case_ad_id = ?, case_due_date = ?, case_type = ?, case_bid_price = ?, case_bid_status = ? WHERE case_id = ?`;
+    const sql = `UPDATE work_case SET case_pp_id = ?, case_ad_id = ?, case_due_date = ?, case_type = ?, case_bid_price = ?, case_bid_status = ?, case_notes = ? WHERE case_id = ?`;
 
     const query = db.query(sql, post, (err, result) => {
         if (err) {
@@ -413,6 +430,36 @@ app.get("/api/cases/bids/:id", [
 
     // Get Bids
     const sql = `SELECT * FROM bids WHERE bid_case_id = ${id}`;
+
+    const query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Cases Bids Count
+app.get("/api/cases/bids/count/:id", [
+    param("id").isInt().withMessage("ID must be an integer"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Get ID
+    const id = req.params.id;
+
+    // Get Bids
+    const sql = `SELECT COUNT(*) FROM bids WHERE bid_case_id = ${id}`;
 
     const query = db.query(sql, (err, result) => {
         if (err) {
