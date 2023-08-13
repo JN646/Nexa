@@ -78,6 +78,14 @@ app.use("/api", (req, res, next) => {
   next();
 });
 
+// Custom validation function for email domains
+const validEmailDomain = (value) => {
+    if (!value.match(/@(sjp\.co\.uk|sjpp\.co\.uk)$/)) {
+      throw new Error('Email must be from @sjp.co.uk or @sjpp.co.uk domain');
+    }
+    return value;
+  };
+
 // *****************************************************
 // MIDDLEWARE
 // *****************************************************
@@ -1145,123 +1153,122 @@ app.get("/api/advisers/:id", (req, res) => {
 });
 
 // Create Adviser
-app.post("/api/advisers/create", (req, res) => {
-  // Get variables
-  let ad_firstname = req.body.ad_firstname;
-  let ad_lastname = req.body.ad_lastname;
-  let ad_email = req.body.ad_email;
-  let ad_role = req.body.ad_role;
-  let ad_tel = req.body.ad_tel;
-
-  // Check if variables are empty
-  if (ad_firstname == "" || ad_lastname == "" || ad_email == "") {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (ad_firstname == null || ad_lastname == null || ad_email == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Ensure that the email is valid
-  if (ad_email.indexOf("@") == -1 || ad_email.indexOf(".") == -1) {
-    res.status(400).json("Please enter a valid email address.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    ad_firstname: ad_firstname,
-    ad_lastname: ad_lastname,
-    ad_role: ad_role,
-    ad_email: ad_email,
-    ad_tel: ad_tel,
-  };
-
-  let sql = "INSERT INTO advisers SET ?";
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
+app.post("/api/advisers/create", [
+    body('ad_firstname').trim().notEmpty(),
+    body('ad_lastname').trim().notEmpty(),
+    body('ad_email')
+      .trim()
+      .isEmail()
+      .custom(validEmailDomain)
+      .custom(async (value) => {
+        const existingEmail = await db.query(
+          "SELECT ad_email FROM advisers WHERE ad_email = ?",
+          [value]
+        );
+        if (existingEmail.length > 0) {
+          throw new Error('Email is already in use');
+        }
+        return value;
+      }),
+    body('ad_role').optional().trim(),
+    body('ad_tel').optional().trim(),
+  ], (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
-
-    // JSON Response
-    res.json(result);
+  
+    const {
+      ad_firstname,
+      ad_lastname,
+      ad_email,
+      ad_role,
+      ad_tel
+    } = req.body;
+  
+    const post = {
+      ad_firstname,
+      ad_lastname,
+      ad_role,
+      ad_email,
+      ad_tel,
+    };
+  
+    const sql = "INSERT INTO advisers SET ?";
+  
+    db.query(sql, post, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+  
+      // Console Logging
+      if (process.env.consoleLogging === true) {
+        console.log(result);
+      }
+  
+      // JSON Response
+      res.json(result);
+    });
   });
-});
 
 // Update Adviser
-app.put("/api/advisers/update/:id", (req, res) => {
-  // Get variables
-  let ad_firstname = req.body.ad_firstname;
-  let ad_lastname = req.body.ad_lastname;
-  let ad_email = req.body.ad_email;
-  let ad_id = req.params.id;
-
-  // Check if ID is empty
-  if (ad_id == "" || ad_id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(ad_id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Check if variables are empty
-  if (ad_firstname == "" || ad_lastname == "" || ad_email == "") {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the variables are not empty
-  if (ad_firstname == null || ad_lastname == null || ad_email == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Ensure that the email is valid
-  if (ad_email.indexOf("@") == -1 || ad_email.indexOf(".") == -1) {
-    res.status(400).json("Please enter a valid email address.");
-    return;
-  }
-
-  // Create array
-  let post = {
-    ad_firstname: ad_firstname,
-    ad_lastname: ad_lastname,
-    ad_role: ad_role,
-    ad_email: ad_email,
-    ad_tel: ad_tel,
-    ad_id: ad_id,
-  };
-
-  // Update Adviser
-  let sql = `UPDATE advisers SET ad_firstname = ?, ad_lastname = ?, ad_role = ?, ad_email = ?, ad_tel = ? WHERE ad_id = ?`;
-
-  let query = db.query(sql, post, (err, result) => {
-    if (err) {
-      throw err;
+app.put("/api/advisers/update/:id", [
+    body('ad_firstname').optional().trim().notEmpty(),
+    body('ad_lastname').optional().trim().notEmpty(),
+    body('ad_email')
+      .optional()
+      .trim()
+      .isEmail()
+      .custom(validEmailDomain)
+      .custom(async (value, { req }) => {
+        const existingEmail = await db.query(
+          "SELECT ad_email FROM advisers WHERE ad_email = ? AND ad_id != ?",
+          [value, req.params.id]
+        );
+        if (existingEmail.length > 0) {
+          throw new Error('Email is already in use');
+        }
+        return value;
+      }),
+    body('ad_role').optional().trim(),
+    body('ad_tel').optional().trim(),
+  ], (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
-
-    // JSON Response
-    res.json(result);
+  
+    const {
+      ad_firstname,
+      ad_lastname,
+      ad_email,
+      ad_role,
+      ad_tel
+    } = req.body;
+  
+    const updatedFields = {};
+    if (ad_firstname) updatedFields.ad_firstname = ad_firstname;
+    if (ad_lastname) updatedFields.ad_lastname = ad_lastname;
+    if (ad_email) updatedFields.ad_email = ad_email;
+    if (ad_role) updatedFields.ad_role = ad_role;
+    if (ad_tel) updatedFields.ad_tel = ad_tel;
+  
+    const sql = "UPDATE advisers SET ? WHERE ad_id = ?";
+  
+    db.query(sql, [updatedFields, req.params.id], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+  
+      // Console Logging
+      if (process.env.consoleLogging === true) {
+        console.log(result);
+      }
+  
+      // JSON Response
+      res.json(result);
+    });
   });
-});
 
 // Delete Adviser
 app.delete("/api/advisers/delete/:id", (req, res) => {
