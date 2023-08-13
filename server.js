@@ -232,35 +232,48 @@ app.get("/api/cases/:id", [
 
 // Create Case
 app.post("/api/cases/create", [
-    body("case_pp_id").optional().isInt().withMessage("Case PP ID must be an integer"),
-    body("case_ad_id").isInt().withMessage("Case AD ID is required and must be an integer"),
-    body("case_due_date").isISO8601().withMessage("Case due date is required and must be in ISO8601 format"),
+    body("case_ad_id")
+        .isInt().withMessage("Adviser ID is required and must be an integer"),
+    body("case_due_date")
+        .isISO8601()
+        .withMessage("Case due date is required and must be in ISO8601 format")
+        .custom((value, { req, res }) => {
+            if (new Date(value) < new Date()) {
+                return false;
+            }
+            return true;
+        }).withMessage("Case due date cannot be in the past"),
     body("case_type").isString().withMessage("Case type is required and must be a string"),
-    body("case_bid_price").isDecimal().withMessage("Case bid price is required and must be a decimal"),
-    body("case_bid_status").isString().withMessage("Case bid status is required and must be a string"),
-], (req, res) => {
+        body("case_bid_price")
+            .isDecimal().withMessage("Case bid price is required and must be a decimal")
+            .custom((value, { req }) => {
+                if (value < 0) {
+                    return false;
+                }
+                if (value <= 30) {
+                    return false;
+                }
+                return true;
+            }).withMessage("Case bid price must be greater than 30 and cannot be negative"),
+    ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
     const {
-        case_pp_id,
         case_ad_id,
         case_due_date,
         case_type,
         case_bid_price,
-        case_bid_status,
     } = req.body;
 
     // Create array
     const post = {
-        case_pp_id,
         case_ad_id,
         case_due_date,
         case_type,
         case_bid_price,
-        case_bid_status,
     };
 
     const sql = "INSERT INTO work_case SET ?";
