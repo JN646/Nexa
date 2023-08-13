@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const rateLimit = require("express-rate-limit");
 const { body, validationResult, param } = require("express-validator");
+const cors = require("cors");
 
 // Load env vars
 require("dotenv").config();
@@ -16,6 +17,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 // Define a rate limiter to prevent excessive API requests
 const apiLimiter = rateLimit({
