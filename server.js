@@ -8,7 +8,7 @@ const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const rateLimit = require("express-rate-limit");
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, param } = require("express-validator");
 
 // Load env vars
 require("dotenv").config();
@@ -1271,59 +1271,40 @@ app.put("/api/advisers/update/:id", [
   });
 
 // Delete Adviser
-app.delete("/api/advisers/delete/:id", (req, res) => {
-  // Get ID
-  let id = req.params.id;
-
-  // Check if ID is empty
-  if (id == "" || id == null) {
-    res.status(400).json("Please fill in all fields.");
-    return;
-  }
-
-  // Check that the ID is a number
-  if (isNaN(id)) {
-    res.status(400).json("ID is not a number");
-    return;
-  }
-
-  // Prevent deletion if the adviser has any cases assigned to them
-  let sql1 = `SELECT * FROM work_case WHERE case_ad_id = ${id}`;
-
-  let query1 = db.query(sql1, (err, result) => {
-    if (err) {
-      throw err;
+app.delete("/api/advisers/delete/:id", [
+    param('id').isInt(),
+  ], async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
-    // Check if the adviser has any cases assigned to them
-    if (result.length > 0) {
-      res.status(400).json("Adviser has cases assigned to them.");
-      return;
+  
+    const adviserId = req.params.id;
+  
+    // Check if adviser has associated cases in word_cases table
+    const checkCasesQuery = "SELECT * FROM work_cases WHERE case_ad_id = ?";
+    const cases = await db.query(checkCasesQuery, [adviserId]);
+  
+    if (cases.length > 0) {
+      return res.status(400).json({ error: "Adviser has associated cases. Cannot delete." });
     }
+  
+    const deleteAdviserQuery = "DELETE FROM advisers WHERE id = ?";
+    
+    db.query(deleteAdviserQuery, [adviserId], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+  
+      // Console Logging
+      if (process.env.consoleLogging === true) {
+        console.log(result);
+      }
+  
+      // JSON Response
+      res.json(result);
+    });
   });
-
-  // If the adviser has no cases assigned to them, delete them
-  let sql2 = `DELETE FROM advisers WHERE ad_id = ${id}`;
-
-  let query2 = db.query(sql2, (err, result) => {
-    if (err) {
-      throw err;
-    }
-
-    // Console Logging
-    if (process.env.consoleLogging == true) {
-      console.log(result);
-    }
-
-    // If result not found
-    if (result.length == 0) {
-      res.status(400).json("Adviser not found.");
-      return;
-    } else {
-      res.status(200).json("Adviser deleted.");
-    }
-  });
-});
 
 // Bids by paraplanner id
 app.get("/api/bids/paraplanner/:id", (req, res) => {
