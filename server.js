@@ -10,6 +10,7 @@ const dotenv = require("dotenv");
 const rateLimit = require("express-rate-limit");
 const { body, validationResult, param } = require("express-validator");
 const cors = require("cors");
+const helmet = require("helmet");
 
 // Load env vars
 require("dotenv").config();
@@ -18,6 +19,9 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(helmet());
+
+app.disable('x-powered-by')
 
 // Define a rate limiter to prevent excessive API requests
 const apiLimiter = rateLimit({
@@ -55,10 +59,10 @@ db.connect((err) => {
 app.use((req, res, next) => {
     // Console Logging
     if (process.env.consoleLogging == true) {
-        console.log(new Date().toISOString() + " " + req.method + " " + req.url + " " + res.statusCode);
+        console.log(new Date().toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '') + " " + req.method + " " + req.url + " " + res.statusCode);
     }
 
-    console.log(new Date().toISOString() + " " + req.method + " " + req.url + " " + res.statusCode);
+    console.log(new Date().toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '') + " " + req.method + " " + req.url + " " + res.statusCode);
 
     next();
 });
