@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
+import BidForm from './BidForm';
 
 const CaseModal = ({ caseId }) => {
     const [showModal, setShowModal] = useState(false);
@@ -50,6 +51,7 @@ const CaseModal = ({ caseId }) => {
                     )}
                 </Modal.Body>
                 <Modal.Footer>
+                    <BidForm caseId={caseId} bidAdId={1} />
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>

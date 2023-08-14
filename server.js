@@ -106,16 +106,6 @@ app.use("/api", (req, res, next) => {
   }
 });
 
-// Trim and sanitize all inputs
-app.use((req, res, next) => {
-  // Trim all inputs
-  for (let key in req.body) {
-    req.body[key] = req.body[key].trim();
-  }
-
-  next();
-});
-
 // Middleware to validate and sanitize inputs using express-validator
 app.use(
   "/api",
@@ -487,7 +477,6 @@ app.post("/api/bids/create",
         body("bid_pp_id").notEmpty().withMessage("Please fill in all fields."),
         body("bid_ad_id").notEmpty().withMessage("Please fill in all fields."),
         body("bid_price").notEmpty().withMessage("Please fill in all fields.").isFloat({ min: 30 }).withMessage("Please enter a bid over £30."),
-        body("bid_status").notEmpty().withMessage("Please fill in all fields."),
     ],
     (req, res) => {
         const errors = validationResult(req);
@@ -500,7 +489,6 @@ app.post("/api/bids/create",
         let bid_pp_id = req.body.bid_pp_id;
         let bid_ad_id = req.body.bid_ad_id;
         let bid_price = req.body.bid_price;
-        let bid_status = req.body.bid_status;
 
         // Create array
         let post = {
@@ -508,8 +496,9 @@ app.post("/api/bids/create",
             bid_pp_id: bid_pp_id,
             bid_ad_id: bid_ad_id,
             bid_price: bid_price,
-            bid_status: bid_status,
         };
+
+        console.log(post);
 
         let sql = "INSERT INTO bids SET ?";
 

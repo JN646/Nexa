@@ -25,6 +25,8 @@ const CaseForm = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
+        console.log("Form data:", formData);
+
         axios
             .post("http://localhost:3005/api/cases/create", formData, {
                 headers: {
@@ -58,7 +60,6 @@ const CaseForm = () => {
 
     return (
         <div>
-            {/* <h2>Create Case</h2> */}
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
             <form onSubmit={handleSubmit} className="form">
