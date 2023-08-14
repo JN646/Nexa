@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CaseModal from './CaseModal';
+import BidCount from './BidCount';
 
 const CaseList = () => {
     const [cases, setCases] = useState([]);
@@ -29,6 +30,7 @@ const CaseList = () => {
                         <th>Adviser Name</th>
                         <th>Case Created</th>
                         <th>Due Date</th>
+                        <th>Bids</th>
                         <th>Info</th>
                         {/* Add other case properties you want to display */}
                     </tr>
@@ -45,6 +47,7 @@ const CaseList = () => {
                             ) : (
                                 <td></td>
                             )}
+                            <td><BidCount bidCaseId={caseItem.case_id} /></td>
                             <td>
                                 <CaseModal caseId={caseItem.case_id} />
                             </td>

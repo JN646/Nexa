@@ -21,7 +21,7 @@ const BidCount = ({ bidCaseId }) => {
 
     return (
         <div>
-            <p><strong>Number of Bids:</strong> {bidCount}</p>
+            {bidCount}
         </div>
     );
 };
