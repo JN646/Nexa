@@ -3,6 +3,7 @@ import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
 import BidForm from './BidForm';
 import BidCount from './BidCount';
+import AdviserRating from './AdviserRating';
 
 const CaseModal = ({ caseId }) => {
     const [showModal, setShowModal] = useState(false);
@@ -40,9 +41,10 @@ const CaseModal = ({ caseId }) => {
                     {caseData && (
                         <>
                             <p><strong>Adviser:</strong> {caseData[0].ad_firstname} {caseData[0].ad_lastname}</p>
+                            <p><strong>Rating:</strong> <AdviserRating adviserID={caseData[0].case_ad_id} /></p>
                             <p><strong>Due Date:</strong> {new Date(caseData[0].case_due_date).toLocaleDateString('en-GB')}</p>
                             <p><strong>Type:</strong> {caseData[0].case_type}</p>
-                            <p><strong>Number of bids:</strong>
+                            <p><strong>Number of bids: </strong>
                                 <BidCount bidCaseId={caseData[0].case_id} />
                             </p>
                             <p><strong>Notes:</strong></p> 

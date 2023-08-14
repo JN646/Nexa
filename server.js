@@ -225,7 +225,7 @@ app.get("/api/cases/:id", [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const sql = `SELECT work_case.*, ad_firstname, ad_lastname FROM work_case LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE case_id = ${req.params.id}`;
+    const sql = `SELECT work_case.*, ad_id, ad_firstname, ad_lastname FROM work_case LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE case_id = ${req.params.id}`;
 
     const query = db.query(sql, (err, result) => {
         if (err) {
@@ -994,7 +994,7 @@ app.get("/api/paraplanners/star-rating/:id", [
     // Get ID
     let id = req.params.id;
 
-    let sql = `SELECT AVG(rating) AS rating FROM reviews WHERE pp_id = ${id}`;
+    let sql = `SELECT AVG(review_stars) AS rating FROM reviews WHERE review_pp_id = ${id}`;
 
     let query = db.query(sql, (err, result) => {
         if (err) {
@@ -1286,6 +1286,40 @@ app.delete("/api/advisers/delete/:id", [
   
       // JSON Response
       res.json(result);
+    });
+});
+
+// Get paraplanner star rating
+app.get("/api/advisers/star-rating/:id", [
+    param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number")
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Get ID
+    let id = req.params.id;
+
+    let sql = `SELECT AVG(review_stars) AS rating FROM reviews WHERE review_ad_id = ${id}`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Paraplanner not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
     });
 });
 

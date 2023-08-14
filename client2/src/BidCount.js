@@ -20,9 +20,9 @@ const BidCount = ({ bidCaseId }) => {
     }, [bidCaseId]);
 
     return (
-        <div>
+        <span>
             {bidCount}
-        </div>
+        </span>
     );
 };
 
