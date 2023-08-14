@@ -256,17 +256,6 @@ app.post("/api/cases/create", [
             return true;
         }).withMessage("Case due date cannot be in the past"),
     body("case_type").isString().withMessage("Case type is required and must be a string"),
-    body("case_bid_price")
-        .isDecimal().withMessage("Case bid price is required and must be a decimal")
-        .custom((value, { req }) => {
-            if (value < 0) {
-                return false;
-            }
-            if (value <= 30) {
-                return false;
-            }
-            return true;
-        }).withMessage("Case bid price must be greater than 30 and cannot be negative"),
     body("case_notes")
         .isString()
         .withMessage("Case notes is required")
@@ -282,7 +271,6 @@ app.post("/api/cases/create", [
         case_ad_id,
         case_due_date,
         case_type,
-        case_bid_price,
         case_notes,
     } = req.body;
 
@@ -291,7 +279,6 @@ app.post("/api/cases/create", [
         case_ad_id,
         case_due_date,
         case_type,
-        case_bid_price,
         case_notes,
     };
 

@@ -108,7 +108,7 @@ const CaseForm = () => {
                         <option value="Drawdown">Drawdown</option>
                     </select>
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                     <label htmlFor="case_bid_price">Bid Price:</label>
                     <input
                         type="text"
@@ -119,7 +119,7 @@ const CaseForm = () => {
                         value={formData.case_bid_price}
                         onChange={handleChange}
                     />
-                </div>
+                </div> */}
                 <div className="form-group">
                     <label htmlFor="case_notes">Notes:</label>
                     <textarea
