@@ -58,7 +58,7 @@ const CaseForm = () => {
 
     return (
         <div>
-            <h2>Create Case</h2>
+            {/* <h2>Create Case</h2> */}
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
             <form onSubmit={handleSubmit} className="form">
@@ -88,6 +88,7 @@ const CaseForm = () => {
                         className="form-control"
                         value={formData.case_due_date}
                         onChange={handleChange}
+                        min={new Date().toISOString().split("T")[0]}
                     />
                 </div>
                 <div className="form-group">
@@ -113,6 +114,7 @@ const CaseForm = () => {
                         name="case_bid_price"
                         id="case_bid_price"
                         className="form-control"
+                        min={30}
                         value={formData.case_bid_price}
                         onChange={handleChange}
                     />
@@ -123,6 +125,8 @@ const CaseForm = () => {
                         name="case_notes"
                         id="case_notes"
                         className="form-control"
+                        lines="10"
+                        placeholder="Include as much information as possible. Do not include any personal information relating to the client."
                         value={formData.case_notes}
                         onChange={handleChange}
                     />

@@ -53,14 +53,14 @@ db.connect((err) => {
 
 // Log all requests
 app.use((req, res, next) => {
-  // Console Logging
-  if (process.env.consoleLogging == true) {
-    console.log(req.method + " " + req.url + " " + res.statusCode);
-  }
+    // Console Logging
+    if (process.env.consoleLogging == true) {
+        console.log(new Date().toISOString() + " " + req.method + " " + req.url + " " + res.statusCode);
+    }
 
-  console.log(req.method + " " + req.url + " " + res.statusCode);
+    console.log(new Date().toISOString() + " " + req.method + " " + req.url + " " + res.statusCode);
 
-  next();
+    next();
 });
 
 // Middleware to log API requests
