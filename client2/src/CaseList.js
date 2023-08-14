@@ -30,7 +30,6 @@ const CaseList = () => {
                         <th>Case Created</th>
                         <th>Due Date</th>
                         <th>Info</th>
-                        <th>Bid</th>
                         {/* Add other case properties you want to display */}
                     </tr>
                 </thead>
@@ -49,8 +48,6 @@ const CaseList = () => {
                             <td>
                                 <CaseModal caseId={caseItem.case_id} />
                             </td>
-                            <td>Bid</td>
-                            {/* Add other case properties you want to display */}
                         </tr>
                     ))}
                 </tbody>

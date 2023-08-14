@@ -650,7 +650,7 @@ app.delete(
 
 // List of all Bids
 app.get("/api/bids/all", (req, res) => {
-    let sql = "SELECT * FROM bids";
+    let sql = "SELECT bids.*, paraplanners.pp_firstname, paraplanners.pp_lastname, advisers.ad_firstname, advisers.ad_lastname FROM bids JOIN paraplanners ON bids.bid_pp_id = paraplanners.pp_id JOIN advisers ON bids.bid_ad_id = advisers.ad_id";
 
     let query = db.query(sql, (err, results) => {
         if (err) {

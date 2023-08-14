@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CaseList from './CaseList'; // Adjust the import path as needed
 import CaseCreateForm from './CaseCreateForm'; // Adjust the import path as needed
+import BidList from './BidList';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -39,6 +40,8 @@ function App() {
       </div>
       <div className='container-fluid'>
         <hr />
+        <h1>Bids</h1>
+        <BidList />
       </div>
 
       {/* Create a case modal */}
