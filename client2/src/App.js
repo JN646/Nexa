@@ -6,6 +6,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Pages
 import Paraplanner from './pages/paraplanner';
 import Adviser from './pages/adviser';
+import ParaplannerLogin from './pages/paraplanner_login';
+import AdviserLogin from './pages/adviser_login';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,6 +27,8 @@ function App() {
           <Routes>
               <Route path='/paraplanner' element={<Paraplanner />} />
               <Route path='/adviser' element={<Adviser />} />
+              <Route path='/login/paraplanner' element={<ParaplannerLogin />} />
+              <Route path='/login/adviser' element={<AdviserLogin />} />
           </Routes>
           <Footer />
       </Router>

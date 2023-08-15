@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import CaseList from '../components/CaseList'; // Adjust the import path as needed
 import CaseCreateForm from '../components/CaseCreateForm'; // Adjust the import path as needed
 import BidList from '../components/BidList';
 
