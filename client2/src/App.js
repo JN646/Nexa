@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CaseList from './components/CaseList'; // Adjust the import path as needed
 import CaseCreateForm from './components/CaseCreateForm'; // Adjust the import path as needed
 import BidList from './components/BidList';
+import TopNavbar from './components/TopNavbar';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -27,16 +28,7 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#">Nexa</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
-            <Nav.Link href="#">Home</Nav.Link>
-            <Nav.Link onClick={handleShow}>Create a Case</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
+      <TopNavbar />
       <div className='container-fluid'>
         <h1>Available Cases</h1>
         <p>Click on a case to view details and bid on it.</p>
