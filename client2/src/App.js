@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import CaseList from './CaseList'; // Adjust the import path as needed
-import CaseCreateForm from './CaseCreateForm'; // Adjust the import path as needed
-import BidList from './BidList';
+import CaseList from './components/CaseList'; // Adjust the import path as needed
+import CaseCreateForm from './components/CaseCreateForm'; // Adjust the import path as needed
+import BidList from './components/BidList';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
