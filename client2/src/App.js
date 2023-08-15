@@ -15,10 +15,9 @@ import 'datatables.net-dt/js/dataTables.dataTables.min.js';
 import 'font-awesome/css/font-awesome.min.css';
 
 // Import the Bootstrap components
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Nav from 'react-bootstrap/Nav';
 
 function App() {
   const [showModal, setShowModal] = useState(false);
@@ -29,12 +28,15 @@ function App() {
   return (
     <div className="App">
       <TopNavbar />
-      <div className='container-fluid'>
+      <div className='container'>
         <h1>Available Cases</h1>
+        <Nav.Link onClick={handleShow}>
+          Create a Case
+        </Nav.Link>
         <p>Click on a case to view details and bid on it.</p>
         <CaseList />
       </div>
-      <div className='container-fluid'>
+      <div className='container'>
         <hr />
         <h1>Placed Bids</h1>
         <p>Choose a paraplanner to complete your case.</p>
