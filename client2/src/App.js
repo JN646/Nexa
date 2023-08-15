@@ -38,12 +38,14 @@ function App() {
         </Navbar.Collapse>
       </Navbar>
       <div className='container-fluid'>
-        <h1>Cases</h1>
+        <h1>Available Cases</h1>
+        <p>Click on a case to view details and bid on it.</p>
         <CaseList />
       </div>
       <div className='container-fluid'>
         <hr />
-        <h1>Bids</h1>
+        <h1>Placed Bids</h1>
+        <p>Choose a paraplanner to complete your case.</p>
         <BidList />
       </div>
 
