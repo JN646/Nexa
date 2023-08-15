@@ -180,7 +180,18 @@ app.get("/api", (req, res) => {
 // CASES
 // *****************************************************
 
-// Nexa Core API - Get All Cases
+// Get All Cases
+/**
+ * Endpoint to get all cases with associated paraplanner and adviser information.
+ * @name GET/api/cases/all
+ * @function
+ * @memberof module:routes/cases
+ * @inner
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} Returns a JSON object containing all cases with associated paraplanner and adviser information.
+ * @throws {Error} Throws an error if there was a problem querying the database.
+ */
 app.get("/api/cases/all", (req, res) => {
   let sql =
     "SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname FROM work_case LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id";
@@ -200,7 +211,19 @@ app.get("/api/cases/all", (req, res) => {
     });
 });
 
+
 // Get all unassigned cases
+/**
+ * Endpoint to get all unassigned cases with associated paraplanner and adviser information.
+ * @name GET/api/cases/unassigned
+ * @function
+ * @memberof module:routes/cases
+ * @inner
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} Returns a JSON object containing all unassigned cases with associated paraplanner and adviser information.
+ * @throws {Error} Throws an error if there was a problem querying the database.
+ */
 app.get("/api/cases/unassigned", (req, res) => {
     let sql =
       "SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname FROM work_case LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE work_case.case_bid_status = 'Unassigned'";
@@ -220,7 +243,20 @@ app.get("/api/cases/unassigned", (req, res) => {
       });
   });
 
-// Nexa Core API - Get Case by ID
+// Get Case by ID
+/**
+ * Endpoint to get a case by ID with associated adviser information.
+ * @name GET/api/cases/:id
+ * @function
+ * @memberof module:routes/cases
+ * @inner
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {number} req.params.id - The ID of the case to retrieve.
+ * @returns {Object} Returns a JSON object containing the case with associated adviser information.
+ * @throws {Error} Throws an error if there was a problem querying the database.
+ * @throws {Error} Throws an error if the ID parameter is not an integer.
+ */
 app.get("/api/cases/:id", [
     param("id").isInt().withMessage("ID must be an integer"),
 ], (req, res) => {
@@ -247,6 +283,22 @@ app.get("/api/cases/:id", [
 });
 
 // Create Case
+/**
+ * Endpoint to create a new case.
+ * @name POST/api/cases/create
+ * @function
+ * @memberof module:routes/cases
+ * @inner
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {number} req.body.case_ad_id - The ID of the adviser associated with the case.
+ * @param {string} req.body.case_due_date - The due date of the case in ISO8601 format.
+ * @param {string} req.body.case_type - The type of the case.
+ * @param {string} req.body.case_notes - The notes associated with the case.
+ * @returns {Object} Returns a JSON object containing the result of the insert query.
+ * @throws {Error} Throws an error if there was a problem querying the database.
+ * @throws {Error} Throws an error if the case due date is in the past.
+ */
 app.post("/api/cases/create", [
     body("case_ad_id")
         .isInt().withMessage("Adviser ID is required and must be an integer"),
