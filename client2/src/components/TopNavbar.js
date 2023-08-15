@@ -5,9 +5,9 @@ import { Container } from 'react-bootstrap';
 
 function TopNavbar() {
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="lg" className='mb-4'>
       <Container fluid>
-        <Navbar.Brand href="#">Nexa</Navbar.Brand>
+        <Navbar.Brand href="#">ParaplannerNexa</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">

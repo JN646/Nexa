@@ -31,7 +31,7 @@ const CaseList = () => {
             ) : (
                 <table className="table">
                     <thead>
-                        <tr>
+                        <tr className='text-center'>
                             <th>ID</th>
                             <th>Type</th>
                             <th>Adviser Name</th>
@@ -45,13 +45,13 @@ const CaseList = () => {
                     <tbody>
                         {cases.map(({ case_id, case_type, ad_firstname, ad_lastname, case_created_at, case_due_date }) => (
                             <tr key={case_id}>
-                                <td>{case_id}</td>
+                                <td className='text-center'>{case_id}</td>
                                 <td>{case_type}</td>
                                 <td>{`${ad_firstname} ${ad_lastname}`}</td>
-                                <td>{new Date(case_created_at).toLocaleDateString('en-GB')}</td>
-                                <td>{case_due_date ? new Date(case_due_date).toLocaleDateString('en-GB') : ''}</td>
-                                <td><BidCount bidCaseId={case_id} /></td>
-                                <td>
+                                <td className='text-center'>{new Date(case_created_at).toLocaleDateString('en-GB')}</td>
+                                <td className='text-center'>{case_due_date ? new Date(case_due_date).toLocaleDateString('en-GB') : ''}</td>
+                                <td className='text-center'><BidCount bidCaseId={case_id} /></td>
+                                <td className='text-center'>
                                     <CaseModal caseId={case_id} />
                                 </td>
                             </tr>

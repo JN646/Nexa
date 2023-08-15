@@ -24,7 +24,7 @@ const BidTable = () => {
     <div>
       <table className="table">
         <thead>
-          <tr>
+          <tr className='text-center'>
             <th>Bid ID</th>
             <th>Case ID</th>
             <th>Type</th>
@@ -40,18 +40,18 @@ const BidTable = () => {
         <tbody>
           {bids.map(bid => (
             <tr key={bid.bid_id}>
-              <td>{bid.bid_id}</td>
-              <td>{bid.bid_case_id}</td>
+              <td className='text-center'>{bid.bid_id}</td>
+              <td className='text-center'>{bid.bid_case_id}</td>
               <td>{bid.case_type}</td>
               <td>{bid.pp_firstname} {bid.pp_lastname}</td>
               <td>{bid.ad_firstname} {bid.ad_lastname}</td>
-              <td>£{bid.bid_price}</td>
-                <td style={{color: bid.bid_status === 'Accepted' ? 'green' : bid.bid_status === 'Rejected' ? 'red' : 'black'}}>{bid.bid_status === 'Unassigned' ? '' : bid.bid_status}</td>
-                <td>{new Date(bid.bid_created_at).toLocaleDateString('en-GB')}</td>
-                <td>
+              <td className='text-center'>£{bid.bid_price}</td>
+                <td className='text-center' style={{color: bid.bid_status === 'Accepted' ? 'green' : bid.bid_status === 'Rejected' ? 'red' : 'black'}}>{bid.bid_status === 'Unassigned' ? '' : bid.bid_status}</td>
+                <td className='text-center'>{new Date(bid.bid_created_at).toLocaleDateString('en-GB')}</td>
+                <td className='text-center'>
                     <CaseModal caseId={bid.bid_case_id} />
                 </td>
-                <td>
+                <td className='text-center'>
                     <button className="btn btn-primary" disabled={bid.bid_status === 'Accepted'}>Accept</button>
                 </td>
             </tr>

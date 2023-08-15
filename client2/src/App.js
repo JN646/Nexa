@@ -4,6 +4,7 @@ import TopNavbar from './components/TopNavbar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Pages
+import Home from './pages/home';
 import Paraplanner from './pages/paraplanner';
 import Adviser from './pages/adviser';
 import ParaplannerLogin from './pages/paraplanner_login';
@@ -25,6 +26,7 @@ function App() {
       <Router>
           <TopNavbar />
           <Routes>
+              <Route path='/' element={<Home />} />
               <Route path='/paraplanner' element={<Paraplanner />} />
               <Route path='/adviser' element={<Adviser />} />
               <Route path='/login/paraplanner' element={<ParaplannerLogin />} />
