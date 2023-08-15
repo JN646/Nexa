@@ -632,29 +632,25 @@ app.put(
         let id = req.params.id;
 
         // Update Bid
-        let sql = `UPDATE bids SET bid_status = 'Accepted' WHERE bid_id = ${id}`;
+        let sql = `
+            UPDATE bids b
+            JOIN bids b2 ON b.bid_case_id = b2.bid_case_id
+            SET b.bid_status = 'Accepted', b2.bid_status = 'Rejected'
+            WHERE b.bid_id = ${id} AND b.bid_status != 'Accepted' AND b2.bid_id != ${id}
+        `;
 
         let query = db.query(sql, (err, result) => {
             if (err) {
                 throw err;
             }
 
-            // Check that the case exists
+            // Check that the bid exists
             if (result.affectedRows == 0) {
-                res.status(400).json("Case not found.");
+                res.status(400).json("Bid not found or already accepted.");
                 return;
-            } else {
-                console.log(result);
-
-                // Check if bid already been accepted
-                if (result.bid_status == "Accepted") {
-                    res.status(400).json("Bid already accepted.");
-                    return;
-                }
-
-                // Update Case
-                res.status(200).json(result);
             }
+
+            res.status(200).json(result);
         });
     }
 );

@@ -42,7 +42,7 @@ const BidTable = () => {
               <td>{bid.pp_firstname} {bid.pp_lastname}</td>
               <td>{bid.ad_firstname} {bid.ad_lastname}</td>
               <td>£{bid.bid_price}</td>
-                <td style={{color: bid.bid_status === 'Accepted' ? 'green' : 'black'}}>{bid.bid_status === 'Unassigned' ? '' : bid.bid_status}</td>
+                <td style={{color: bid.bid_status === 'Accepted' ? 'green' : bid.bid_status === 'Rejected' ? 'red' : 'black'}}>{bid.bid_status === 'Unassigned' ? '' : bid.bid_status}</td>
                 <td>{new Date(bid.bid_created_at).toLocaleDateString('en-GB')}</td>
                 <td>
                     <button className="btn btn-primary" disabled={bid.bid_status === 'Accepted'}>Accept</button>
