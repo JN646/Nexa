@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import CaseList from './components/CaseList'; // Adjust the import path as needed
-import CaseCreateForm from './components/CaseCreateForm'; // Adjust the import path as needed
-import BidList from './components/BidList';
+// Imports
+import React from 'react';
 import TopNavbar from './components/TopNavbar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+// Pages
+import Paraplanner from './pages/paraplanner';
+import Adviser from './pages/adviser';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,60 +16,18 @@ import 'datatables.net-dt/js/dataTables.dataTables.min.js';
 
 // Import font-awesome
 import 'font-awesome/css/font-awesome.min.css';
-
-// Import the Bootstrap components
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
+import Footer from './components/Footer';
 
 function App() {
-  const [showModal, setShowModal] = useState(false);
-
-  const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
-
   return (
-    <div className="App">
-      <TopNavbar />
-      <div className='container'>
-        <h1>Available Cases</h1>
-        <Nav.Link onClick={handleShow}>
-          Create a Case
-        </Nav.Link>
-        <p>Click on a case to view details and bid on it.</p>
-        <CaseList />
-      </div>
-      <div className='container'>
-        <hr />
-        <h1>Placed Bids</h1>
-        <p>Choose a paraplanner to complete your case.</p>
-        <BidList />
-      </div>
-
-      {/* Create a case modal */}
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create a Case</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <CaseCreateForm />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Footer */}
-      <footer className="footer mt-auto py-3">
-        <div className="container text-center">
-          <span className="text-muted">&copy; Nexa 2023</span>
-
-          </div>
-      </footer>
-
-    </div>
+      <Router>
+          <TopNavbar />
+          <Routes>
+              <Route path='/paraplanner' element={<Paraplanner />} />
+              <Route path='/adviser' element={<Adviser />} />
+          </Routes>
+          <Footer />
+      </Router>
   );
 }
 

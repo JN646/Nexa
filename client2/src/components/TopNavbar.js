@@ -11,7 +11,8 @@ function TopNavbar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="#">Home</Nav.Link>
+            <Nav.Link href="/paraplanner">Paraplanner</Nav.Link>
+            <Nav.Link href="/adviser">Adviser</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
