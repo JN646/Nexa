@@ -108,18 +108,6 @@ const CaseForm = () => {
                         <option value="Drawdown">Drawdown</option>
                     </select>
                 </div>
-                {/* <div className="form-group">
-                    <label htmlFor="case_bid_price">Bid Price:</label>
-                    <input
-                        type="text"
-                        name="case_bid_price"
-                        id="case_bid_price"
-                        className="form-control"
-                        min={30}
-                        value={formData.case_bid_price}
-                        onChange={handleChange}
-                    />
-                </div> */}
                 <div className="form-group">
                     <label htmlFor="case_notes">Notes:</label>
                     <textarea
@@ -130,6 +118,7 @@ const CaseForm = () => {
                         placeholder="Include as much information as possible. Do not include any personal information relating to the client."
                         value={formData.case_notes}
                         onChange={handleChange}
+                        style={{ height: "300px" }}
                     />
                 </div>
                 <button type="submit" className="mt-2 btn btn-primary">Create Case</button>

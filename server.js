@@ -631,11 +631,12 @@ app.put(
         // Get ID
         let id = req.params.id;
 
-        // Update Bid
+        // Update Bid and Case Bid Status
         let sql = `
             UPDATE bids b
             JOIN bids b2 ON b.bid_case_id = b2.bid_case_id
-            SET b.bid_status = 'Accepted', b2.bid_status = 'Rejected'
+            JOIN work_case wc ON b.bid_case_id = wc.case_id
+            SET b.bid_status = 'Accepted', b2.bid_status = 'Rejected', wc.case_bid_status = 'Accepted'
             WHERE b.bid_id = ${id} AND b.bid_status != 'Accepted' AND b2.bid_id != ${id}
         `;
 

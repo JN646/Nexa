@@ -37,19 +37,21 @@ const CaseList = () => {
                             <th>Adviser Name</th>
                             <th>Case Created</th>
                             <th>Due Date</th>
+                            <th>Status</th>
                             <th>Bids</th>
                             <th>Info</th>
                             {/* Add other case properties you want to display */}
                         </tr>
                     </thead>
                     <tbody>
-                        {cases.map(({ case_id, case_type, ad_firstname, ad_lastname, case_created_at, case_due_date }) => (
+                        {cases.map(({ case_id, case_type, ad_firstname, ad_lastname, case_created_at, case_due_date, case_bid_status }) => (
                             <tr key={case_id}>
                                 <td className='text-center'>{case_id}</td>
                                 <td>{case_type}</td>
                                 <td>{`${ad_firstname} ${ad_lastname}`}</td>
                                 <td className='text-center'>{new Date(case_created_at).toLocaleDateString('en-GB')}</td>
                                 <td className='text-center'>{case_due_date ? new Date(case_due_date).toLocaleDateString('en-GB') : ''}</td>
+                                <td className='text-center'>{case_bid_status}</td>
                                 <td className='text-center'><BidCount bidCaseId={case_id} /></td>
                                 <td className='text-center'>
                                     <CaseModal caseId={case_id} />
