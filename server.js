@@ -67,6 +67,22 @@ app.use((req, res, next) => {
     next();
 });
 
+// Create Audit
+function createAudit(audit_attach, audit_attach_id, audit_message) {
+    // Create Audit
+    let sql = `INSERT INTO audit SET audit_attach = ?, audit_attach_id = ?, audit_message = ?`;
+
+    let query = db.query(
+        sql,
+        [audit_attach, audit_attach_id, audit_message],
+        (err, result) => {
+            if (err) {
+                throw err;
+            }
+        }
+    );
+}
+
 // Middleware to log API requests
 app.use("/api", (req, res, next) => {
   const logEntry = {
@@ -552,9 +568,15 @@ app.post("/api/bids/create",
 
             // Check that the case exists
             if (result.length == 0) {
+                // Create Audit
+                createAudit("bids", bid_case_id, "Can't create, case not found.")
+
                 res.status(400).json("Case not found.");
                 return;
             } else {
+                // Create Audit
+                createAudit("bids", bid_case_id, "Bid created.")
+                
                 res.status(200).json(result);
             }
         });
@@ -609,9 +631,15 @@ app.put(
 
             // Check that the case exists
             if (result.affectedRows == 0) {
+                // Create Audit
+                createAudit("bids", bid_id, "Can't update, bid not found.")
+
                 res.status(400).json("Case not found.");
                 return;
             } else {
+                // Create Audit
+                createAudit("bids", bid_id, "Bid updated.")
+
                 res.status(200).json(result);
             }
         });
@@ -647,9 +675,29 @@ app.put(
 
             // Check that the bid exists
             if (result.affectedRows == 0) {
+                // Create Audit
+                createAudit("bids", id, "Bid not found or already accepted.")
+
                 res.status(400).json("Bid not found or already accepted.");
                 return;
             }
+
+            // Get ID of all cases with the same case ID that have been rejected
+            let sql2 = `SELECT bid_id FROM bids WHERE bid_case_id = (SELECT bid_case_id FROM bids WHERE bid_id = ${id}) AND bid_status = 'Rejected'`;
+
+            let query2 = db.query(sql2, (err, result) => {
+                if (err) {
+                    throw err;
+                }
+
+                // Loop through all rejected bids and create audits
+                for (let i = 0; i < result.length; i++) {
+                    createAudit("bids", result[i].bid_id, "Bid rejected.")
+                }
+            });
+
+            // Create Audit
+            createAudit("bids", id, "Bid accepted.")
 
             res.status(200).json(result);
         });
@@ -679,9 +727,15 @@ app.delete(
 
             // Check that the case exists
             if (result.affectedRows == 0) {
-                res.status(400).json("Case not found.");
+                // Create Audit
+                createAudit("bids", id, "Can't delete, bid not found.")
+
+                res.status(400).json("Bid not found.");
                 return;
             } else {
+                // Create Audit
+                createAudit("bids", id, "Bid deleted.")
+
                 res.status(200).json(result);
             }
         });
