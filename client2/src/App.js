@@ -4,6 +4,7 @@ import TopNavbar from './components/TopNavbar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Pages
+import NotFound from './pages/notFound';
 import Home from './pages/home';
 import Paraplanner from './pages/paraplanner';
 import Adviser from './pages/adviser';
@@ -26,6 +27,7 @@ function App() {
       <Router>
           <TopNavbar />
           <Routes>
+                <Route path='*' element={<NotFound />} />
               <Route path='/' element={<Home />} />
               <Route path='/paraplanner' element={<Paraplanner />} />
               <Route path='/adviser' element={<Adviser />} />
