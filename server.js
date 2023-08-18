@@ -525,6 +525,42 @@ app.get("/api/cases/bids/count/:id", [
     });
 });
 
+// Get all cases assigned to a paraplanner
+app.get("/api/cases/paraplanner/:id", [
+    param("id").isInt().withMessage("ID must be an integer"),
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Get ID
+    const id = req.params.id;
+
+    // Get Cases
+    const sql = `SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname, bid_price 
+                 FROM work_case 
+                 LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id 
+                 LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id 
+                 LEFT JOIN bids ON work_case.case_bid_id = bids.bid_id
+                 WHERE work_case.case_pp_id = ${id}
+                `;
+
+    const query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
 // *****************************************************
 // BIDS
 // *****************************************************
@@ -664,7 +700,7 @@ app.put(
             UPDATE bids b
             JOIN bids b2 ON b.bid_case_id = b2.bid_case_id
             JOIN work_case wc ON b.bid_case_id = wc.case_id
-            SET b.bid_status = 'Accepted', b2.bid_status = 'Rejected', wc.case_bid_status = 'Accepted'
+            SET b.bid_status = 'Accepted', b2.bid_status = 'Rejected', wc.case_bid_status = 'Accepted', wc.case_bid_id = b.bid_id
             WHERE b.bid_id = ${id} AND b.bid_status != 'Accepted' AND b2.bid_id != ${id}
         `;
 

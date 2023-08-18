@@ -1,5 +1,7 @@
 import React from 'react';
-import CaseList from '../components/CaseList'; // Adjust the import path as needed
+import CaseList from '../components/CaseList';
+import ParaplannerCaseList from '../components/ParaplannerCaseList';
+import WorkHome from '../components/WorkHome';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -19,6 +21,15 @@ function Paraplanner() {
         <h1>Available Cases</h1>
         <p>Click on a case to view details and bid on it.</p>
         <CaseList />
+      </div>
+      <hr />
+      <div className='container'>
+        <h1>My Cases</h1>
+        <ParaplannerCaseList />
+      </div>
+      <hr />
+      <div className='container-fluid'>
+        <WorkHome />
       </div>
     </div>
   );
