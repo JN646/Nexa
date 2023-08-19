@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CaseModal from './CaseModal';
-import BidCount from './BidCount';
+import WorkHome from './WorkHome';
 
 const ParaplpannerCaseList = () => {
     const [cases, setCases] = useState([]);
@@ -44,7 +43,7 @@ const ParaplpannerCaseList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {cases.map(({ case_id, case_type, ad_firstname, ad_lastname, case_created_at, case_due_date, case_bid_status, bid_price }) => (
+                        {cases.map(({ case_id, case_type, case_ad_id, ad_firstname, ad_lastname, case_created_at, case_due_date, case_bid_status, bid_price }) => (
                             <tr key={case_id}>
                                 <td className='text-center'>{case_id}</td>
                                 <td>{case_type}</td>
@@ -56,7 +55,7 @@ const ParaplpannerCaseList = () => {
                                 </td>
                                 <td className='text-center'>{case_bid_status}</td>
                                 <td className='text-center'>
-                                    <CaseModal caseId={case_id} />
+                                    <WorkHome AdviserID={case_ad_id} CaseID={case_id} />
                                 </td>
                             </tr>
                         ))}

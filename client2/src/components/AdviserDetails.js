@@ -20,14 +20,22 @@ const AdviserDetails = ({adviserId}) => {
             });
     }, [adviserId]);
 
+    const handlePhoneClick = () => {
+        window.location.href = `tel:${adviserData.ad_tel}`;
+    }
+
+    const handleEmailClick = () => {
+        window.location.href = `mailto:${adviserData.ad_email}`;
+    }
+
     return (
         <div>
             {adviserData ? (
                 <div>
                     <p><strong>Name:</strong> {adviserData.ad_firstname} {adviserData.ad_lastname}</p>
-                    <p><strong>Rating:</strong> <AdviserRating adviserId={adviserData.ad_rating} /></p>
-                    <p><strong>Phone:</strong> {adviserData.ad_tel}</p>
-                    <p><strong>Email:</strong> {adviserData.ad_email}</p>
+                    <p><strong>Rating:</strong> <AdviserRating adviserId={adviserData.ad_id} /></p>
+                    <p><strong>Phone:</strong> <a href={`tel:${adviserData.ad_tel}`} onClick={handlePhoneClick}>{adviserData.ad_tel}</a></p>
+                    <p><strong>Email:</strong> <a href={`mailto:${adviserData.ad_email}`} onClick={handleEmailClick}>{adviserData.ad_email}</a></p>
                 </div>
             ) : (
                 <p>Loading adviser data...</p>
