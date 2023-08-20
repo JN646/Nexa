@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import AdviserDetails from "./AdviserDetails";
 import CaseInfo from "./CaseInfo";
+import CaseStatusButtons from "./CaseStatusButtons";
 
 const WorkHome = ({AdviserID, CaseID}) => {
   const [showModal, setShowModal] = useState(false);
@@ -26,6 +27,7 @@ const WorkHome = ({AdviserID, CaseID}) => {
               </div>
               <div className="col-md-6 col-sm-12 border">
                 <h4>Case Workspace</h4>
+                <CaseStatusButtons caseID={CaseID} />
               </div>
               <div className="col-md-3 col-sm-12 border">
                 <h4>Case Info</h4>
