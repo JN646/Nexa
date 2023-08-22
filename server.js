@@ -525,6 +525,38 @@ app.get("/api/cases/bids/count/:id", [
     });
 });
 
+// Change Case Status to Start Work
+app.put("/api/cases/:id/status", [
+    param("id").isInt().withMessage("ID must be an integer")
+], (req, res) => {
+    // Get ID
+    const id = req.params.id;
+    const status = req.body.status.toString();
+
+    // Update Case Status
+    const sql = `UPDATE work_case SET case_bid_status = ? WHERE case_id = ?`;
+
+    db.query(sql, status, id, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Check that the case exists
+        if (result.affectedRows == 0) {
+            // Create Audit
+            createAudit("work_case", id, "Can't update, case not found.")
+
+            res.status(400).json("Case not found.");
+            return;
+        } else {
+            // Create Audit
+            createAudit("work_case", id, "Case status changed to " + status + ".")
+
+            res.status(200).json(result);
+        }
+    });
+});
+
 // Get all cases assigned to a paraplanner
 app.get("/api/cases/paraplanner/:id", [
     param("id").isInt().withMessage("ID must be an integer"),

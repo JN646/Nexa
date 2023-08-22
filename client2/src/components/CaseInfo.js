@@ -29,6 +29,7 @@ const CaseInfo = ({caseID}) => {
             {cases ? (
                 <div>
                     <p><strong>Type:</strong> {cases.case_type}</p>
+                    <p><strong>Status:</strong> {cases.case_bid_status}</p>
                     <p><strong>Due Date:</strong> {new Date(cases.case_due_date).toLocaleDateString()}</p>
                     <p><strong>Notes:</strong></p> 
                     <div>{cases.case_notes}</div>
