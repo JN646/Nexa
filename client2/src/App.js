@@ -1,6 +1,6 @@
 // Imports
 import React from 'react';
-import TopNavbar from './components/TopNavbar';
+import TopNavbar from './components/page_elements/TopNavbar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Pages
@@ -20,7 +20,7 @@ import 'datatables.net-dt/js/dataTables.dataTables.min.js';
 
 // Import font-awesome
 import 'font-awesome/css/font-awesome.min.css';
-import Footer from './components/Footer';
+import Footer from './components/page_elements/Footer';
 
 function App() {
   return (
