@@ -1028,9 +1028,14 @@ app.get("/api/paraplanners/:id", [
 
 // Create Paraplanner
 app.post("/api/paraplanners/create", [
+    param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number"),
     body("pp_firstname").notEmpty().withMessage("First name is required"),
     body("pp_lastname").notEmpty().withMessage("Last name is required"),
-    body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address")
+    body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address"),
+    body("pp_tel").notEmpty().withMessage("Telephone number is required"),
+    body("pp_lv4").notEmpty().withMessage("Please specify if the paraplanner is level 4 qualified").isIn(['Yes', 'No']).withMessage("Please enter either Yes or No"),
+    body("pp_chartered").notEmpty().withMessage("Please specify if the paraplanner is chartered").isIn(['Yes', 'No']).withMessage("Please enter either Yes or No"),
+    body("pp_sjp_years").notEmpty().withMessage("Please specify the number of years the paraplanner has been with SJP").isInt({min: 0}).withMessage("Please enter a number 0 or greater")
 ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -1041,15 +1046,24 @@ app.post("/api/paraplanners/create", [
     let pp_firstname = req.body.pp_firstname;
     let pp_lastname = req.body.pp_lastname;
     let pp_email = req.body.pp_email;
+    let pp_tel = req.body.pp_tel;
+    let pp_lv4 = req.body.pp_lv4;
+    let pp_chartered = req.body.pp_chartered;
+    let pp_sjp_years = req.body.pp_sjp_years;
+    let pp_id = req.params.id;
 
     // Create array
     let post = {
         pp_firstname: pp_firstname,
         pp_lastname: pp_lastname,
         pp_email: pp_email,
+        pp_tel: pp_tel,
+        pp_lv4: pp_lv4,
+        pp_chartered: pp_chartered,
+        pp_sjp_years: pp_sjp_years
     };
 
-    let sql = "INSERT INTO paraplanners SET ?";
+    let sql = `UPDATE paraplanners SET ? WHERE pp_id = ${pp_id}`;
 
     let query = db.query(sql, post, (err, result) => {
         if (err) {
@@ -1071,7 +1085,11 @@ app.put("/api/paraplanners/update/:id", [
     param("id").notEmpty().withMessage("ID is required").isNumeric().withMessage("ID must be a number"),
     body("pp_firstname").notEmpty().withMessage("First name is required"),
     body("pp_lastname").notEmpty().withMessage("Last name is required"),
-    body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address")
+    body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address"),
+    body("pp_tel").notEmpty().withMessage("Telephone number is required"),
+    body("pp_lv4").notEmpty().withMessage("Please specify if the paraplanner is level 4 qualified").isIn(['Yes', 'No']).withMessage("Please enter either Yes or No"),
+    body("pp_chartered").notEmpty().withMessage("Please specify if the paraplanner is chartered").isIn(['Yes', 'No']).withMessage("Please enter either Yes or No"),
+    body("pp_sjp_years").notEmpty().withMessage("Please specify the number of years the paraplanner has been with SJP").isInt({min: 0}).withMessage("Please enter a number 0 or greater")
 ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -1082,6 +1100,10 @@ app.put("/api/paraplanners/update/:id", [
     let pp_firstname = req.body.pp_firstname;
     let pp_lastname = req.body.pp_lastname;
     let pp_email = req.body.pp_email;
+    let pp_tel = req.body.pp_tel;
+    let pp_lv4 = req.body.pp_lv4;
+    let pp_chartered = req.body.pp_chartered;
+    let pp_sjp_years = req.body.pp_sjp_years;
     let pp_id = req.params.id;
 
     // Create array
@@ -1089,11 +1111,15 @@ app.put("/api/paraplanners/update/:id", [
         pp_firstname: pp_firstname,
         pp_lastname: pp_lastname,
         pp_email: pp_email,
+        pp_tel: pp_tel,
+        pp_lv4: pp_lv4,
+        pp_chartered: pp_chartered,
+        pp_sjp_years: pp_sjp_years,
         pp_id: pp_id,
     };
 
     // Update Paraplanner
-    let sql = `UPDATE paraplanners SET pp_firstname = ?, pp_lastname = ?, pp_email = ? WHERE pp_id = ?`;
+    let sql = `UPDATE paraplanners SET pp_firstname = ?, pp_lastname = ?, pp_email = ?, pp_tel = ?, pp_lv4 = ?, pp_chartered = ?, pp_sjp_years = ? WHERE pp_id = ?`;
 
     let query = db.query(sql, post, (err, result) => {
         if (err) {
