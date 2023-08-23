@@ -11,6 +11,9 @@ import Adviser from './pages/adviser';
 import ParaplannerLogin from './pages/paraplanner_login';
 import AdviserLogin from './pages/adviser_login';
 
+// App CSS
+import './App.css';
+
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
 
