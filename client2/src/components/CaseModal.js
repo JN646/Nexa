@@ -41,7 +41,7 @@ const CaseModal = ({ caseId }) => {
                     {caseData && (
                         <>
                             <p><strong>Adviser:</strong> {caseData[0].ad_firstname} {caseData[0].ad_lastname}</p>
-                            <p><strong>Rating:</strong> <AdviserRating adviserID={caseData[0].case_ad_id} /></p>
+                            <p><strong>Rating:</strong> <AdviserRating adviserId={caseData[0].case_ad_id} /></p>
                             <p><strong>Due Date:</strong> {new Date(caseData[0].case_due_date).toLocaleDateString('en-GB')}</p>
                             <p><strong>Type:</strong> {caseData[0].case_type}</p>
                             <p><strong>Number of bids: </strong>
