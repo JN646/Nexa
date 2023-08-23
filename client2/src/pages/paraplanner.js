@@ -1,6 +1,8 @@
 import React from 'react';
 import CaseList from '../components/CaseList';
 import ParaplannerCaseList from '../components/ParaplannerCaseList';
+import ParaplannerDoneCaseList from '../components/ParaplannerDoneCaseList';
+import ParaplannerLostCaseList from '../components/ParaplannerLostCaseList';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -23,8 +25,14 @@ function Paraplanner() {
       </div>
       <hr />
       <div className='container'>
-        <h1>My Cases</h1>
+        <h1>My Open Cases</h1>
         <ParaplannerCaseList />
+
+        <h1>My Done Cases</h1>
+        <ParaplannerDoneCaseList />
+
+        <h1>My Lost Cases</h1>
+        <ParaplannerLostCaseList />
       </div>
     </div>
   );

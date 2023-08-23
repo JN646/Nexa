@@ -927,6 +927,39 @@ app.get("/api/cases/paraplanner/:id", [
     });
 });
 
+// Get DONE Case by Paraplanner id
+app.get("/api/cases/paraplanner/done/:id", [
+    param('id').isInt().withMessage('ID must be an integer')
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    let sql = `SELECT * FROM work_case WHERE case_pp_id = ${req.params.id} AND case_bid_status = 'Done'`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging == true) {
+            console.log(results);
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Paraplanner has no cases.");
+            return;
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+
 // Get Case by Adviser id
 app.get("/api/cases/adviser/:id", [
     param('id').isInt().withMessage('ID must be an integer')
@@ -1538,6 +1571,43 @@ app.get("/api/bids/paraplanner/:id", [
         console.error(err);
         res.status(500).json({ error: "Database error" });
     }
+});
+
+// Bids by paraplanner id and status
+app.get("/api/bids/paraplanner/:status/:id", [
+    param('id').isInt().withMessage('ID must be an integer'),
+    param('status').isIn(['accepted', 'working', 'rejected', 'done']),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const id = req.params.id;
+    let status = req.params.status;
+
+    // Capatalise the first letter of status
+    status = status.charAt(0).toUpperCase() + status.slice(1);
+
+    // Array
+    const values = [id, status];
+
+    // Get Bids
+    const sql = `SELECT * FROM bids WHERE bid_pp_id = ? AND bid_status = ?`;
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging === true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
 });
 
 // Bids by adviser id

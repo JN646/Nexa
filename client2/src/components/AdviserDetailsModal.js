@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import AdviserRating from "./AdviserRating";
 import { Modal, Button } from "react-bootstrap";
+import Avatar from "@mui/material/Avatar";
+import Stack from "@mui/material/Stack";
 
 const AdviserDetailsModal = ({adviserId}) => {
     const [showModal, setShowModal] = useState(false);
@@ -9,6 +11,8 @@ const AdviserDetailsModal = ({adviserId}) => {
 
     const handleClose = () => setShowModal(false);
     const handleShow = () => setShowModal(true);
+
+    let initials = adviserData ? adviserData.ad_firstname.charAt(0) : '';
 
     useEffect(() => {
         // Fetch bid count from the API for the specific bid_case_id
@@ -29,7 +33,10 @@ const AdviserDetailsModal = ({adviserId}) => {
         <div>
             <Button variant="outline-primary" onClick={handleShow}>
                 {adviserData ? (
-                    <span>{adviserData.ad_firstname} {adviserData.ad_lastname}</span>
+                    <Stack direction="row" spacing={2}>
+                        <Avatar sx={{ width: 24, height: 24 }}>{initials}</Avatar>
+                        <div>{adviserData.ad_firstname} {adviserData.ad_lastname}</div>
+                    </Stack>
                 ) : (
                     'Loading adviser data...'
                 )}
