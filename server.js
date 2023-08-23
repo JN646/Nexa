@@ -533,10 +533,16 @@ app.put("/api/cases/:id/status", [
     const id = req.params.id;
     const status = req.body.status.toString();
 
+    // Array
+    const post = [
+        status,
+        id,
+    ];
+
     // Update Case Status
     const sql = `UPDATE work_case SET case_bid_status = ? WHERE case_id = ?`;
 
-    db.query(sql, status, id, (err, result) => {
+    db.query(sql, post, (err, result) => {
         if (err) {
             throw err;
         }
