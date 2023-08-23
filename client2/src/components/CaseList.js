@@ -3,6 +3,7 @@ import axios from 'axios';
 import CaseModal from './CaseModal';
 import BidCount from './BidCount';
 import AdviserDetailsModal from './AdviserDetailsModal';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const CaseList = () => {
     const [cases, setCases] = useState([]);
@@ -28,7 +29,7 @@ const CaseList = () => {
     return (
         <div>
             {loading ? (
-                <p>Loading...</p>
+                <CircularProgress />
             ) : (
                 <table className="table">
                     <thead>

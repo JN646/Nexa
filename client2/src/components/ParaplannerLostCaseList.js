@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ParaplpannerCaseList = () => {
     const [cases, setCases] = useState([]);
@@ -25,7 +26,7 @@ const ParaplpannerCaseList = () => {
     return (
         <div>
             {loading ? (
-                <p>Loading...</p>
+                <CircularProgress />
             ) : (
                 <table className="table">
                     <thead>

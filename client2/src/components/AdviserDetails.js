@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import AdviserRating from "./AdviserRating";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const AdviserDetails = ({adviserId}) => {
     const [adviserData, setAdviserData] = useState(null);
@@ -38,7 +39,7 @@ const AdviserDetails = ({adviserId}) => {
                     <p><strong>Email:</strong> <a href={`mailto:${adviserData.ad_email}`} onClick={handleEmailClick}>{adviserData.ad_email}</a></p>
                 </div>
             ) : (
-                <p>Loading adviser data...</p>
+                <CircularProgress />
             )}
         </div>
     );

@@ -25,8 +25,6 @@ const CaseForm = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        console.log("Form data:", formData);
-
         axios
             .post("http://localhost:3005/api/cases/create", formData, {
                 headers: {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const CaseInfo = ({caseID}) => {
     const [cases, setCases] = useState([]);
@@ -35,7 +36,7 @@ const CaseInfo = ({caseID}) => {
                     <div>{cases.case_notes}</div>
                 </div>
             ) : (
-                <div>Loading case data...</div>
+                <CircularProgress />
             )}
         </div>
     );

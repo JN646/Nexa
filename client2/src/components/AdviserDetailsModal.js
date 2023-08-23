@@ -4,6 +4,7 @@ import AdviserRating from "./AdviserRating";
 import { Modal, Button } from "react-bootstrap";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const AdviserDetailsModal = ({adviserId}) => {
     const [showModal, setShowModal] = useState(false);
@@ -52,7 +53,7 @@ const AdviserDetailsModal = ({adviserId}) => {
                             <p><strong>Rating:</strong> <AdviserRating adviserId={adviserData.ad_id} /></p>
                         </div>
                     ) : (
-                        <p>Loading adviser data...</p>
+                        <CircularProgress />
                     )}
                 </Modal.Body>
                 <Modal.Footer>
