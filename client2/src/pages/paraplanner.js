@@ -4,38 +4,27 @@ import ParaplannerCaseList from '../components/ParaplannerCaseList';
 import ParaplannerDoneCaseList from '../components/ParaplannerDoneCaseList';
 import ParaplannerLostCaseList from '../components/ParaplannerLostCaseList';
 
-// Import the Bootstrap CSS
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-// Import Datatables
-import 'datatables.net-dt/css/jquery.dataTables.min.css';
-import 'datatables.net-dt/js/dataTables.dataTables.min.js';
-
-// Import font-awesome
-import 'font-awesome/css/font-awesome.min.css';
- 
 function Paraplanner() {
-
   return (
-    <div className="App">
-      <div className='container-fluid'>
-        <h1>Available Cases</h1>
+    <div className='container-fluid'>
+      <div>
+        <h3>Available Cases</h3>
         <p>Click on a case to view details and bid on it.</p>
         <CaseList />
       </div>
       <hr />
-      <div className='container-fluid'>
-        <h1>My Open Cases</h1>
+      <div>
+        <h3>My Open Cases</h3>
         <ParaplannerCaseList />
 
-        <h1>My Done Cases</h1>
+        <h3>My Done Cases</h3>
         <ParaplannerDoneCaseList />
 
-        <h1>My Lost Cases</h1>
+        <h3>My Lost Cases</h3>
         <ParaplannerLostCaseList />
       </div>
     </div>
   );
 }
- 
+
 export default Paraplanner;
