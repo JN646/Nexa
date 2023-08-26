@@ -11,6 +11,7 @@ const rateLimit = require("express-rate-limit");
 const { body, validationResult, param } = require("express-validator");
 const cors = require("cors");
 const helmet = require("helmet");
+const bcrypt = require("bcrypt");
 
 // Load env vars
 require("dotenv").config();
@@ -1077,6 +1078,7 @@ app.post("/api/paraplanners/create", [
     body("pp_lastname").notEmpty().withMessage("Last name is required"),
     body("pp_email").notEmpty().withMessage("Email is required").isEmail().withMessage("Please enter a valid email address"),
     body("pp_tel").notEmpty().withMessage("Telephone number is required"),
+    body("pp_password").notEmpty().withMessage("Password is required"),
     body("pp_lv4").notEmpty().withMessage("Please specify if the paraplanner is level 4 qualified").isIn(['Yes', 'No']).withMessage("Please enter either Yes or No"),
     body("pp_chartered").notEmpty().withMessage("Please specify if the paraplanner is chartered").isIn(['Yes', 'No']).withMessage("Please enter either Yes or No"),
     body("pp_sjp_years").notEmpty().withMessage("Please specify the number of years the paraplanner has been with SJP").isInt({min: 0}).withMessage("Please enter a number 0 or greater")
@@ -1091,10 +1093,14 @@ app.post("/api/paraplanners/create", [
     let pp_lastname = req.body.pp_lastname;
     let pp_email = req.body.pp_email;
     let pp_tel = req.body.pp_tel;
+    let pp_password = req.body.pp_password;
     let pp_lv4 = req.body.pp_lv4;
     let pp_chartered = req.body.pp_chartered;
     let pp_sjp_years = req.body.pp_sjp_years;
     let pp_id = req.params.id;
+
+    // Encrypt password
+    let pp_password_encrypted = bcrypt.hashSync(pp_password, 10);
 
     // Create array
     let post = {
@@ -1102,6 +1108,7 @@ app.post("/api/paraplanners/create", [
         pp_lastname: pp_lastname,
         pp_email: pp_email,
         pp_tel: pp_tel,
+        pp_password: pp_password_encrypted,
         pp_lv4: pp_lv4,
         pp_chartered: pp_chartered,
         pp_sjp_years: pp_sjp_years
@@ -1109,7 +1116,7 @@ app.post("/api/paraplanners/create", [
 
     let sql = `UPDATE paraplanners SET ? WHERE pp_id = ${pp_id}`;
 
-    let query = db.query(sql, post, (err, result) => {
+    db.query(sql, post, (err, result) => {
         if (err) {
             throw err;
         }
