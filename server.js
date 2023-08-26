@@ -242,9 +242,9 @@ app.get("/api/cases/all", (req, res) => {
  */
 app.get("/api/cases/unassigned", (req, res) => {
     let sql =
-      "SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname FROM work_case LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE work_case.case_bid_status = 'Unassigned'";
+      "SELECT work_case.*, pp_firstname, pp_lastname, ad_firstname, ad_lastname FROM work_case LEFT JOIN paraplanners ON work_case.case_pp_id = paraplanners.pp_id LEFT JOIN advisers ON work_case.case_ad_id = advisers.ad_id WHERE work_case.case_bid_status = 'Unassigned' ORDER BY work_case.case_due_date ASC";
   
-      const query = db.query(sql, (err, result) => {
+      db.query(sql, (err, result) => {
           if (err) {
               throw err;
           }

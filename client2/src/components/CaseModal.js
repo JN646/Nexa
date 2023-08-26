@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
-import BidForm from "./BidForm";
+import BidForm2 from "./BidForm2";
 import BidCount from "./BidCount";
 import AdviserRating from "./AdviserRating";
 
 const CaseModal = ({ caseId }) => {
   const [showModal, setShowModal] = useState(false);
   const [caseData, setCaseData] = useState(null);
+  const [bidSuccess, setBidSuccess] = useState(false); // new state variable
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -28,6 +29,10 @@ const CaseModal = ({ caseId }) => {
       fetchCaseData();
     }
   }, [showModal, caseId]);
+
+  const handleBidSuccess = () => {
+    setBidSuccess(true);
+  };
 
   return (
     <div>
@@ -73,9 +78,20 @@ const CaseModal = ({ caseId }) => {
                 <p>No notes available</p>
               )}
             </>
+
+            {/* Bid Form */}
+            {!bidSuccess && ( // conditionally render the bid form
+              <>
+                <h2>Place a bid</h2>
+                <BidForm2
+                  caseId={caseId}
+                  adviserId={caseData[0].case_ad_id}
+                  onBidSuccess={handleBidSuccess} // pass the success handler to the bid form
+                />
+              </>
+            )}
           </Modal.Body>
           <Modal.Footer>
-            <BidForm caseId={caseId} adviserId={caseData[0].case_ad_id} />
             <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>

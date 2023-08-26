@@ -18,13 +18,13 @@ function Paraplanner() {
 
   return (
     <div className="App">
-      <div className='container'>
+      <div className='container-fluid'>
         <h1>Available Cases</h1>
         <p>Click on a case to view details and bid on it.</p>
         <CaseList />
       </div>
       <hr />
-      <div className='container'>
+      <div className='container-fluid'>
         <h1>My Open Cases</h1>
         <ParaplannerCaseList />
 

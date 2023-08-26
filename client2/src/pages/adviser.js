@@ -25,7 +25,7 @@ function Adviser() {
 
   return (
     <div className="App">
-      <div className='container'>
+      <div className='container-fluid'>
         <h1>Placed Bids</h1>
         <Nav.Link onClick={handleShow}>
           Create a Case
