@@ -1849,6 +1849,55 @@ app.get("/api/reviews/total", (req, res) => {
 });
 
 // *****************************************************
+// AUDIT
+// *****************************************************
+// Get all audit logs
+app.get("/api/audit/all", (req, res) => {
+    // Get Audit Logs
+    let sql = `SELECT * FROM audit`;
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // Console Logging
+        if (process.env.consoleLogging === true) {
+            console.log(result);
+        }
+
+        // JSON Response
+        res.status(200).json(result);
+    });
+});
+
+// Get all audit logs for specific case id
+app.get("/api/audit/case/:id", [
+    param('id').notEmpty().isInt(),
+], async (req, res) => {
+    const { id } = req.params;
+
+    // Get Audit Logs
+    const sql = `SELECT * FROM audit WHERE audit_attach = "work_case" AND audit_attach_id = ? ORDER BY audit_created_at DESC`;
+    const values = [id];
+
+    // Query
+    let query = db.query(sql, values, (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Audit logs not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// *****************************************************
 // SERVER
 // *****************************************************
 
