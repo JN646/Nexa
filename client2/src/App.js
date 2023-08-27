@@ -9,6 +9,7 @@ import Home from './pages/home';
 import Paraplanner from './pages/paraplanner';
 import Adviser from './pages/adviser';
 import ParaplannerLogin from './pages/paraplanner_login';
+import ParaplannerRegister from './pages/paraplanner_register';
 import AdviserLogin from './pages/adviser_login';
 
 // App CSS
@@ -35,6 +36,7 @@ function App() {
               <Route path='/paraplanner' element={<Paraplanner />} />
               <Route path='/adviser' element={<Adviser />} />
               <Route path='/login/paraplanner' element={<ParaplannerLogin />} />
+              <Route path='/register/paraplanner' element={<ParaplannerRegister />} />
               <Route path='/login/adviser' element={<AdviserLogin />} />
           </Routes>
           <Footer />

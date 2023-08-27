@@ -26,12 +26,12 @@ function Home() {
                 <h2>Paraplanner</h2>
                 {/* Link to Paraplanner Login */}
                 <div className='row'>
-                    <a href='/paraplanner/login'>Paraplanner Login</a>
+                    <a href='/login/paraplanner'>Paraplanner Login</a>
                 </div>
 
                 {/* Link to Paraplanner Register */}
                 <div className='row'>
-                    <a href='/paraplanner/register'>Paraplanner Register</a>
+                    <a href='/register/paraplanner'>Paraplanner Register</a>
                 </div>
             </div>
 
@@ -39,12 +39,12 @@ function Home() {
                 <h2>Adviser</h2>
                 {/* Link to Adviser Login */}
                 <div className='row'>
-                    <a href='/adviser/login'>Adviser Login</a>
+                    <a href='/login/adviser'>Adviser Login</a>
                 </div>
 
                 {/* Link to Adviser Register */}
                 <div className='row'>
-                    <a href='/adviser/register'>Adviser Register</a>
+                    <a href='/register/adviser'>Adviser Register</a>
                 </div>
             </div>
         </div>
