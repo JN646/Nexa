@@ -160,11 +160,6 @@ app.use(
 // CORE PAGES
 // *****************************************************
 
-// Catch-all route for 404 errors
-app.use((req, res, next) => {
-    res.status(404).send("Page not found");
-});
-
 // Home Page
 app.get("/", (req, res) => {
   res.status(200).send("Nexa Core API");
@@ -172,21 +167,30 @@ app.get("/", (req, res) => {
 
 // Status
 app.get("/status", (req, res) => {
-  // Get information about server
-  let server = {
-    name: "ParaplannerNexa",
-    version: "1.0.0",
-    status: "Running",
-    port: port,
-  };
+    // Check if database is present
+    db.query("SELECT 1", (err, result) => {
+        if (err) {
+            console.log("Error connecting to database:", err);
+            res.status(500).send("Error connecting to database");
+        } else {
+            // Get information about server
+            let server = {
+                name: "ParaplannerNexa",
+                version: "1.0.0",
+                status: "Running",
+                database: "nexa",
+                databaseStatus: "Connected"
+            };
 
-  // Console Logging
-  if (process.env.consoleLogging == true) {
-    console.log(server);
-  }
+            // Console Logging
+            if (process.env.consoleLogging == true) {
+                console.log(server);
+            }
 
-  // JSON Response
-  res.status(200).json(result);
+            // JSON Response
+            res.status(200).json(server);
+        }
+    });
 });
 
 // *****************************************************
