@@ -130,7 +130,7 @@ function ParaplannerLogin() {
                             onChange={(e) => setSjpYears(e.target.value)}
                         ></Form.Control>
                     </Form.Group>
-                    <Button type='submit' variant='primary' className='pt-4'>
+                    <Button type='submit' variant='primary' className='mt-4'>
                         Register
                     </Button>
                 </Form>
