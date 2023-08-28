@@ -79,7 +79,7 @@ const BidForm2 = ({ caseId, adviserId }) => {
           readOnly
         />
         <input
-          type="text"
+          type="hidden"
           name="bid_pp_id"
           onChange={handleChange}
           value="1"

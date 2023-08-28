@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CaseModal from './CaseModal';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 
 const BidTable = () => {
   const [bids, setBids] = useState([]);
@@ -155,7 +155,13 @@ const BidTable = () => {
                   <CaseModal caseId={bid.bid_case_id} />
                 </TableCell>
                 <TableCell>
-                  <button className="btn btn-primary" disabled={bid.bid_status === 'Accepted'}>Accept</button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={bid.bid_status === 'Accepted'}
+                  >
+                    Accept
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
