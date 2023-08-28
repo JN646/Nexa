@@ -37,7 +37,7 @@ app.use("/api", apiLimiter);
 
 // Configure Mysql
 const db = mysql.createConnection({
-  host: "127.0.0.1",
+  host: "localhost",
   user: "nexa",
   password: "Nexa1234",
   port: 3306,
