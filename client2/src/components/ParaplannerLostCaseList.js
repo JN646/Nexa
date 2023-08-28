@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Paper from '@mui/material/Paper';
+import AdviserDetailsModal from './AdviserDetailsModal';
 
 const ParaplpannerCaseList = () => {
     const [cases, setCases] = useState([]);
@@ -17,7 +25,12 @@ const ParaplpannerCaseList = () => {
                 setCases(response.data);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching cases:', error);
+                if (error.response && error.response.status === 400) {
+                    console.log('No cases found');
+                    setLoading(false);
+                } else {
+                    console.error('Error fetching cases:', error);
+                }
             }
         };
         fetchData();
@@ -28,34 +41,36 @@ const ParaplpannerCaseList = () => {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <table className="table">
-                    <thead>
-                        <tr className='text-center'>
-                            <th>ID</th>
-                            <th>Type</th>
-                            <th>Adviser Name</th>
-                            <th>Bid Price</th>
-                            <th>Case Created</th>
-                            <th>Due Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {cases.map(({ case_id, case_type, case_ad_id, ad_firstname, ad_lastname, case_created_at, case_due_date, case_bid_status, bid_price }) => (
-                            <tr key={case_id}>
-                                <td className='text-center'>{case_id}</td>
-                                <td>{case_type}</td>
-                                <td>{`${ad_firstname} ${ad_lastname}`}</td>
-                                <td className='text-center'>£{bid_price}</td>
-                                <td className='text-center'>{new Date(case_created_at).toLocaleDateString('en-GB')}</td>
-                                <td className={`text-center ${new Date(case_due_date) < new Date() ? 'text-danger' : ''}`}>
-                                    {case_due_date ? new Date(case_due_date).toLocaleDateString('en-GB') : ''}
-                                </td>
-                                <td className='text-center'>{case_bid_status}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Case ID</TableCell>
+                                <TableCell>Paraplaner</TableCell>
+                                <TableCell>Adviser</TableCell>
+                                <TableCell>Bid Price</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Created At</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {cases.map(({ bid_id, bid_case_id, pp_firstname, pp_lastname, bid_ad_id, bid_price, bid_status, bid_created_at }) => (
+                                <TableRow key={bid_id}>
+                                    <TableCell className='text-center'>{bid_id}</TableCell>
+                                    <TableCell>{bid_case_id}</TableCell>
+                                    <TableCell>{pp_firstname} {pp_lastname}</TableCell>
+                                    <TableCell>
+                                        <AdviserDetailsModal adviserId={ bid_ad_id } />
+                                    </TableCell>
+                                    <TableCell>{bid_price}</TableCell>
+                                    <TableCell>{bid_status}</TableCell>
+                                    <TableCell>{new Date(bid_created_at).toLocaleDateString()}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             )}
         </div>
     );

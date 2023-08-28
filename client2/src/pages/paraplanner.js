@@ -20,7 +20,7 @@ function Paraplanner() {
         <h3>My Done Cases</h3>
         <ParaplannerDoneCaseList />
 
-        <h3>My Lost Cases</h3>
+        <h3>My Lost Bids</h3>
         <ParaplannerLostCaseList />
       </div>
     </div>

@@ -24,7 +24,12 @@ const ParaplannerCaseList = () => {
                 setCases(response.data);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching cases:', error);
+                if (error.response && error.response.status === 400) {
+                    console.log('No cases found');
+                    setLoading(false);
+                } else {
+                    console.error('Error fetching cases:', error);
+                }
             }
         };
         fetchData();

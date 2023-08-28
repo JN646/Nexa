@@ -24,6 +24,11 @@ function Home() {
         <div className='row'>
             <div className='col-6 text-center'>
                 <h2>Paraplanner</h2>
+                {/* Link to paraplanner home */}
+                <div className='row'>
+                    <a href='/paraplanner'>Paraplanner Home</a>
+                </div>
+
                 {/* Link to Paraplanner Login */}
                 <div className='row'>
                     <a href='/login/paraplanner'>Paraplanner Login</a>
@@ -37,6 +42,11 @@ function Home() {
 
             <div className='col-6 text-center'>
                 <h2>Adviser</h2>
+                {/* Link to adviser home */}
+                <div className='row'>
+                    <a href='/adviser'>Paraplanner Home</a>
+                </div>
+
                 {/* Link to Adviser Login */}
                 <div className='row'>
                     <a href='/login/adviser'>Adviser Login</a>

@@ -1615,7 +1615,11 @@ app.get("/api/bids/paraplanner/:status/:id", [
     const values = [id, status];
 
     // Get Bids
-    const sql = `SELECT * FROM bids WHERE bid_pp_id = ? AND bid_status = ?`;
+    const sql = `SELECT bids.*, paraplanners.pp_firstname, paraplanners.pp_lastname, advisers.ad_firstname, advisers.ad_lastname 
+                 FROM bids 
+                 JOIN paraplanners ON bids.bid_pp_id = paraplanners.pp_id 
+                 JOIN advisers ON bids.bid_ad_id = advisers.ad_id 
+                 WHERE bid_pp_id = ? AND bid_status = ?`;
 
     db.query(sql, values, (err, result) => {
         if (err) {
