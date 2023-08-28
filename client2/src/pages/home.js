@@ -44,7 +44,7 @@ function Home() {
                 <h2>Adviser</h2>
                 {/* Link to adviser home */}
                 <div className='row'>
-                    <a href='/adviser'>Paraplanner Home</a>
+                    <a href='/adviser'>Adviser Home</a>
                 </div>
 
                 {/* Link to Adviser Login */}
