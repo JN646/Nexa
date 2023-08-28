@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CaseCreateForm from '../components/CaseCreateForm'; // Adjust the import path as needed
 import BidList from '../components/BidList';
+import Button from '@mui/material/Button';
 
 // Import the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,7 +15,6 @@ import 'font-awesome/css/font-awesome.min.css';
 
 // Import the Bootstrap components
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
  
 function Adviser() {
@@ -27,10 +27,11 @@ function Adviser() {
     <div className="App">
       <div className='container-fluid'>
         <h1>Placed Bids</h1>
-        <Nav.Link onClick={handleShow}>
-          Create a Case
+        <Nav.Link className='py-4' onClick={handleShow}>
+          <Button variant="contained" onClick={handleShow}>
+            Create a Case
+          </Button>
         </Nav.Link>
-        <p>Choose a paraplanner to complete your case.</p>
         <BidList />
       </div>
 

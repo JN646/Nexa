@@ -1,5 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Button,
+    Typography,
+    Snackbar,
+} from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const CaseForm = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +28,7 @@ const CaseForm = () => {
 
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [open, setOpen] = useState(false);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -45,6 +61,7 @@ const CaseForm = () => {
                 });
                 setErrorMessage("");
                 setSuccessMessage("Case created successfully!");
+                setOpen(true);
             })
             .catch((error) => {
                 console.error("Error creating case:", error);
@@ -53,73 +70,92 @@ const CaseForm = () => {
                 } else {
                     setErrorMessage(error.response.data.error);
                 }
+                setOpen(true);
             });
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpen(false);
     };
 
     return (
         <div>
-            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-            <form onSubmit={handleSubmit} className="form">
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                {successMessage ? (
+                    <Alert onClose={handleClose} severity="success">
+                        {successMessage}
+                    </Alert>
+                ) : (
+                    <Alert onClose={handleClose} severity="error">
+                        {errorMessage}
+                    </Alert>
+                )}
+            </Snackbar>
+            <Typography variant="h4" gutterBottom>
+                Create Case
+            </Typography>
+            <form onSubmit={handleSubmit}>
                 <input
                     type="hidden"
                     name="case_pp_id"
                     value="0"
                     onChange={handleChange}
                 />
-                <div className="form-group">
-                    <label htmlFor="case_ad_id">Adviser ID:</label>
-                    <input
-                        type="text"
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        label="Adviser ID"
                         name="case_ad_id"
-                        id="case_ad_id"
-                        className="form-control"
                         value={formData.case_ad_id}
                         onChange={handleChange}
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="case_due_date">Due Date:</label>
-                    <input
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        label="Due Date"
                         type="date"
                         name="case_due_date"
-                        id="case_due_date"
-                        className="form-control"
                         value={formData.case_due_date}
                         onChange={handleChange}
-                        min={new Date().toISOString().split("T")[0]}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            min: new Date().toISOString().split("T")[0],
+                        }}
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="case_type">Type:</label>
-                    <select
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Type</InputLabel>
+                    <Select
                         name="case_type"
-                        id="case_type"
-                        className="form-control"
                         value={formData.case_type}
                         onChange={handleChange}
                     >
-                        <option value="">Select a case type</option>
-                        <option value="Pension Transfer">Pension Transfer</option>
-                        <option value="Retirement Account">Retirement Account</option>
-                        <option value="VCT">VCT</option>
-                        <option value="Drawdown">Drawdown</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="case_notes">Notes:</label>
-                    <textarea
+                        <MenuItem value="">Select a case type</MenuItem>
+                        <MenuItem value="Pension Transfer">Pension Transfer</MenuItem>
+                        <MenuItem value="Retirement Account">Retirement Account</MenuItem>
+                        <MenuItem value="VCT">VCT</MenuItem>
+                        <MenuItem value="Drawdown">Drawdown</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        label="Notes"
                         name="case_notes"
-                        id="case_notes"
-                        className="form-control"
-                        lines="10"
+                        multiline
+                        rows={10}
                         placeholder="Include as much information as possible. Do not include any personal information relating to the client."
                         value={formData.case_notes}
                         onChange={handleChange}
-                        style={{ height: "300px" }}
                     />
-                </div>
-                <button type="submit" className="mt-2 btn btn-primary">Create Case</button>
+                </FormControl>
+                <Button type="submit" variant="contained" color="primary">
+                    Create Case
+                </Button>
             </form>
         </div>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Typography } from "@mui/material";
 import axios from "axios";
 import BidForm2 from "./BidForm2";
 import BidCount from "./BidCount";
@@ -36,66 +36,76 @@ const CaseModal = ({ caseId }) => {
 
   return (
     <div>
-      <Button variant="primary" onClick={handleShow}>
+      <Button variant="contained" color="primary" onClick={handleShow}>
         View
       </Button>
 
       {/* Display case information here */}
       {caseData && (
-        <Modal show={showModal} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Case Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <>
-              <p>
+        <Modal
+          open={showModal}
+          onClose={handleClose}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              maxWidth: "400px",
+              padding: "16px",
+              borderRadius: "4px",
+            }}
+          >
+            <div style={{ padding: "16px" }}>
+              <Typography variant="h5">Case Details</Typography>
+              <Typography variant="body1">
                 <strong>Adviser:</strong> {caseData[0].ad_firstname}{" "}
                 {caseData[0].ad_lastname}
-              </p>
-              <p>
+              </Typography>
+              <Typography variant="body1">
                 <strong>Rating:</strong>{" "}
                 <AdviserRating adviserId={caseData[0].case_ad_id} />
-              </p>
-              <p>
+              </Typography>
+              <Typography variant="body1">
                 <strong>Due Date:</strong>{" "}
                 {new Date(caseData[0].case_due_date).toLocaleDateString(
                   "en-GB"
                 )}
-              </p>
-              <p>
+              </Typography>
+              <Typography variant="body1">
                 <strong>Type:</strong> {caseData[0].case_type}
-              </p>
-              <p>
+              </Typography>
+              <Typography variant="body1">
                 <strong>Number of bids: </strong>
                 <BidCount bidCaseId={caseData[0].case_id} />
-              </p>
-              <p>
+              </Typography>
+              <Typography variant="body1">
                 <strong>Notes:</strong>
-              </p>
+              </Typography>
               {caseData[0].case_notes ? (
-                <p>{caseData[0].case_notes}</p>
+                <Typography variant="body1">
+                  {caseData[0].case_notes}
+                </Typography>
               ) : (
-                <p>No notes available</p>
+                <Typography variant="body1">No notes available</Typography>
               )}
-            </>
 
-            {/* Bid Form */}
-            {!bidSuccess && ( // conditionally render the bid form
-              <>
-                <h2>Place a bid</h2>
-                <BidForm2
-                  caseId={caseId}
-                  adviserId={caseData[0].case_ad_id}
-                  onBidSuccess={handleBidSuccess} // pass the success handler to the bid form
-                />
-              </>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-          </Modal.Footer>
+              {/* Bid Form */}
+              {!bidSuccess && ( // conditionally render the bid form
+                <>
+                  <Typography variant="h6">Place a bid</Typography>
+                  <BidForm2
+                    caseId={caseId}
+                    adviserId={caseData[0].case_ad_id}
+                    onBidSuccess={handleBidSuccess} // pass the success handler to the bid form
+                  />
+                </>
+              )}
+            </div>
+          </div>
         </Modal>
       )}
     </div>
