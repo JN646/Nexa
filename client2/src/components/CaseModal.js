@@ -16,7 +16,7 @@ const CaseModal = ({ caseId }) => {
   useEffect(() => {
     const fetchCaseData = async () => {
       const response = await axios.get(
-        `http://localhost:3005/api/cases/${caseId}`,
+        `/api/cases/${caseId}`,
         {
           headers: {
             "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",

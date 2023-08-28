@@ -16,7 +16,7 @@ const ParaplpannerCaseList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3005/api/cases/paraplanner/done/1', {
+                const response = await axios.get('/api/cases/paraplanner/done/1', {
                     headers: {
                         'x-api-key': '6bc32663-fb4f-4b8b-86e7-f08faa2cf302'
                     }

@@ -23,7 +23,7 @@ const AdviserDetailsModal = ({ adviserId }) => {
   useEffect(() => {
     // Fetch bid count from the API for the specific bid_case_id
     axios
-      .get(`http://localhost:3005/api/advisers/${adviserId}`, {
+      .get(`/api/advisers/${adviserId}`, {
         headers: {
           "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
         },

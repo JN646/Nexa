@@ -42,7 +42,7 @@ const CaseForm = () => {
         event.preventDefault();
 
         axios
-            .post("http://localhost:3005/api/cases/create", formData, {
+            .post("/api/cases/create", formData, {
                 headers: {
                     "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
                 },

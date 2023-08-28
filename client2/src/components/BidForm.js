@@ -33,7 +33,7 @@ const BidForm = ({ caseId, adviserId }) => {
     console.log("Form data:", formData);
 
     axios
-      .post("http://localhost:3005/api/bids/create", formData, {
+      .post("/api/bids/create", formData, {
         headers: {
           "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
         },

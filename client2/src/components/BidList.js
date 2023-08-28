@@ -13,7 +13,7 @@ const BidTable = () => {
 
   useEffect(() => {
     // Fetch all bids from the API
-    axios.get(`http://localhost:3005/api/bids/all`, {
+    axios.get(`/api/bids/all`, {
         headers: {
             'x-api-key': '6bc32663-fb4f-4b8b-86e7-f08faa2cf302'
         }

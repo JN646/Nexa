@@ -8,7 +8,7 @@ const CaseInfo = ({ caseID }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3005/api/cases/${caseID}`, {
+      .get(`/api/cases/${caseID}`, {
         headers: {
           "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
         },

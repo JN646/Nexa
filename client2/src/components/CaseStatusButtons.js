@@ -6,7 +6,7 @@ const CaseStatusButtons = ({ caseID }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3005/api/cases/${caseID}`, {
+      .get(`/api/cases/${caseID}`, {
         headers: {
           "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
         },
@@ -22,7 +22,7 @@ const CaseStatusButtons = ({ caseID }) => {
     const handleStatusChange = (newStatus) => {
       axios
         .put(
-          `http://localhost:3005/api/cases/${caseID}/status`,
+          `/api/cases/${caseID}/status`,
           { status: newStatus },
           {
             headers: {
