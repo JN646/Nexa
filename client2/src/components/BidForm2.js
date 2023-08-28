@@ -5,7 +5,7 @@ import axios from "axios";
 const BidForm2 = ({ caseId, adviserId }) => {
   const [formData, setFormData] = useState({
     bid_case_id: caseId,
-    bid_pp_id: "",
+    bid_pp_id: 1,
     bid_ad_id: adviserId,
     bid_price: "",
   });
@@ -79,7 +79,7 @@ const BidForm2 = ({ caseId, adviserId }) => {
           readOnly
         />
         <input
-          type="hidden"
+          type="text"
           name="bid_pp_id"
           onChange={handleChange}
           value="1"

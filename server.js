@@ -616,10 +616,10 @@ app.get("/api/cases/paraplanner/:id", [
 // Create Bid
 app.post("/api/bids/create", 
     [
-        body("bid_case_id").notEmpty().withMessage("Please fill in all fields.").isInt().withMessage("ID is not a number"),
-        body("bid_pp_id").notEmpty().withMessage("Please fill in all fields."),
-        body("bid_ad_id").notEmpty().withMessage("Please fill in all fields."),
-        body("bid_price").notEmpty().withMessage("Please fill in all fields.").isFloat({ min: 30 }).withMessage("Please enter a bid over £30."),
+        body("bid_case_id").notEmpty().withMessage("Please add a case id.").isInt().withMessage("ID is not a number"),
+        body("bid_pp_id").notEmpty().withMessage("Please add a paraplaner id.").isInt().withMessage("ID is not a number"),
+        body("bid_ad_id").notEmpty().withMessage("Please add an adviser id.").isInt().withMessage("ID is not a number"),
+        body("bid_price").notEmpty().withMessage("Please add a bid price.").isFloat({ min: 30 }).withMessage("Please enter a bid over £30."),
     ],
     (req, res) => {
         const errors = validationResult(req);
