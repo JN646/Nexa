@@ -41,7 +41,7 @@ const ParaplpannerCaseList = () => {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <TableContainer component={Paper}>
+                <TableContainer>
                     <Table>
                         <TableHead>
                             <TableRow>

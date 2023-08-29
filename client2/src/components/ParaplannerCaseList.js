@@ -65,7 +65,7 @@ const ParaplannerCaseList = () => {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <TableContainer component={Paper}>
+                <TableContainer>
                     <Table size='small' aria-label="paraplanner case list">
                         <TableHead>
                             <TableRow style={{textAlign: 'center'}}>

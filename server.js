@@ -1918,6 +1918,93 @@ app.get("/api/audit/case/:id", [
 });
 
 // *****************************************************
+// CASE COMMENTS
+// *****************************************************
+// Get all case comments for a specific case
+app.get("/api/case-comments/case/:id", [
+    param('id').notEmpty().isInt(),
+], async (req, res) => {
+    const { id } = req.params;
+
+    // Get Case Comments
+    const sql = `SELECT * FROM case_comments WHERE case_comment_case_id = ? ORDER BY case_comment_dtlc DESC`;
+
+    // Query
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Case comments not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
+// Create a case comment
+app.post("/api/case-comments/create", [
+    body('case_comment_case_id').notEmpty().isInt(),
+    body('case_comment_attach').notEmpty().isIn(['Paraplanner', 'Adviser']),
+    body('case_comment_attach_id').notEmpty().isInt(),
+    body('case_comment_message').notEmpty().isLength({ max: 1000 }),
+], async (req, res) => {
+    const { case_comment_case_id, case_comment_attach, case_comment_attach_id, case_comment_message } = req.body;
+
+    // Create Case Comment
+    const sql = `INSERT INTO case_comments (case_comment_case_id, case_comment_attach, case_comment_attach_id, case_comment_message) VALUES (?, ?, ?, ?)`;
+
+    // Query
+    db.query(sql, [case_comment_case_id, case_comment_attach, case_comment_attach_id, case_comment_message], (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Case comment not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+
+        // Create Audit Log
+       createAudit(case_comment_case_id, "work_case", case_comment_attach_id, "Case comment created");
+    });
+});
+
+// Delete a comment based on case_comment_id
+app.delete("/api/case-comments/delete/:id", [
+    param('id').notEmpty().isInt(),
+], async (req, res) => {
+    const { id } = req.params;
+
+    // Delete Case Comment
+    const sql = `DELETE FROM case_comments WHERE case_comment_id = ?`;
+
+    // Query
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        // If result not found
+        if (result.length == 0) {
+            res.status(400).json("Case comment not found.");
+            return;
+        } else {
+            res.status(200).json(result);
+        }
+
+        // Create Audit Log
+        createAudit(case_comment_case_id, "work_case", case_comment_attach_id, "Case comment deleted");
+    });
+});
+
+// *****************************************************
 // SERVER
 // *****************************************************
 

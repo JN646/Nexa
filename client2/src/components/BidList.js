@@ -124,7 +124,7 @@ const BidTable = () => {
         value={filterValue}
         onChange={handleFilterValueChange}
       />
-      <TableContainer component={Paper}>
+      <TableContainer>
         <Table>
           <TableHead>
             <TableRow>

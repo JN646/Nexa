@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
-import CaseCreateForm from '../components/CaseCreateForm'; // Adjust the import path as needed
-import BidList from '../components/BidList';
-import Button from '@mui/material/Button';
+import React, { useState } from "react";
+import CaseCreateForm from "../components/CaseCreateForm"; // Adjust the import path as needed
+import BidList from "../components/BidList";
+import { Container, Typography, Button, Paper } from "@mui/material";
 
 // Import the Bootstrap CSS
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Import Datatables
-import 'datatables.net-dt/css/jquery.dataTables.min.css';
-import 'datatables.net-dt/js/dataTables.dataTables.min.js';
+import "datatables.net-dt/css/jquery.dataTables.min.css";
+import "datatables.net-dt/js/dataTables.dataTables.min.js";
 
 // Import font-awesome
-import 'font-awesome/css/font-awesome.min.css';
+import "font-awesome/css/font-awesome.min.css";
 
 // Import the Bootstrap components
-import Modal from 'react-bootstrap/Modal';
-import Nav from 'react-bootstrap/Nav';
- 
+import Modal from "react-bootstrap/Modal";
+
 function Adviser() {
   const [showModal, setShowModal] = useState(false);
 
@@ -24,33 +23,26 @@ function Adviser() {
   const handleShow = () => setShowModal(true);
 
   return (
-    <div className="App">
-      <div className='container-fluid'>
-        <h1>Placed Bids</h1>
-        <Nav.Link className='py-4' onClick={handleShow}>
-          <Button variant="contained" onClick={handleShow}>
-            Create a Case
-          </Button>
-        </Nav.Link>
+    <Container maxWidth="xl">
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Placed Bids
+        </Typography>
+        <Button variant="contained" onClick={handleShow} sx={{ mb: 2 }}>
+          Create a Case
+        </Button>
         <BidList />
-      </div>
+      </Paper>
 
       {/* Create a case modal */}
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create a Case</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <CaseCreateForm />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
+      <Modal open={showModal} onClose={handleClose}>
+        <CaseCreateForm />
+        <Button variant="contained" onClick={handleClose}>
+          Close
+        </Button>
       </Modal>
-    </div>
+    </Container>
   );
 }
- 
+
 export default Adviser;

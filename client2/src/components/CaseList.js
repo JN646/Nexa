@@ -72,7 +72,7 @@ const CaseList = () => {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <TableContainer component={Paper}>
+                <TableContainer>
                     <Table size='small'>
                         <TableHead>
                             <TableRow>

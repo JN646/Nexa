@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from "@mui/material";
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+} from "@mui/lab";
+import { Paper } from "@mui/material";
 
 const AuditCaseList = ({ caseId }) => {
   const [auditCases, setAuditCases] = useState([]);
@@ -43,27 +43,24 @@ const AuditCaseList = ({ caseId }) => {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Message</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {auditCases.map((auditCase) => (
-            <TableRow key={auditCase.caseId}>
-              <TableCell component="th" scope="row">
-                {formatDate(auditCase.audit_created_at)}
-              </TableCell>
-              <TableCell>{auditCase.audit_message}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Timeline position="alternate">
+      {auditCases.map((auditCase) => (
+        <TimelineItem key={auditCase.caseId}>
+          <TimelineSeparator>
+            <TimelineDot />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <Paper elevation={3} sx={{ p: 2 }}>
+              <p>{formatDate(auditCase.audit_created_at)}</p>
+              <p>{auditCase.audit_message}</p>
+            </Paper>
+          </TimelineContent>
+        </TimelineItem>
+      ))}
+    </Timeline>
   );
 };
 
+// Export component
 export default AuditCaseList;

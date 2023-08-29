@@ -40,7 +40,7 @@ const AdviserDetailsModal = ({ adviserId }) => {
     <div>
       <Button variant="outlined" onClick={handleShow}>
         {adviserData ? (
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={1} alignItems="center">
             <Avatar sx={{ width: 24, height: 24 }}>{initials}</Avatar>
             <Typography variant="body1">
               {adviserData.ad_firstname} {adviserData.ad_lastname}
@@ -69,11 +69,10 @@ const AdviserDetailsModal = ({ adviserId }) => {
             {adviserData ? (
               <div>
                 <p>
-                  <strong>Name:</strong> {adviserData.ad_firstname}{" "}
+                  {adviserData.ad_firstname}{" "}
                   {adviserData.ad_lastname}
                 </p>
                 <p>
-                  <strong>Rating:</strong>{" "}
                   <AdviserRating adviserId={adviserData.ad_id} />
                 </p>
               </div>
