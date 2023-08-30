@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
+import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 const CaseCommentList = ({ caseId }) => {
     const [cases, setCaseComments] = useState([]);
@@ -24,24 +24,35 @@ const CaseCommentList = ({ caseId }) => {
       }, []);
 
     return (
-        <div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {loading ? (
                 <CircularProgress />
             ) : (
-                <div>
-                    <ul>
-                        {cases.map((caseComment) => (
-                            <div key={caseComment.case_comment_id}>
-                                <p>{caseComment.case_comment_dtlc}</p>
-                                <p>{caseComment.case_comment_message}</p>
-                            </div>
-                        ))}
-                    </ul>
-                </div>
+                <List sx={{ width: '100%', maxWidth: 360 }}>
+                    {cases.map((caseComment) => (
+                        <ListItem key={caseComment.case_comment_id} alignItems="flex-start" sx={{ backgroundColor: caseComment.case_comment_attach === 'Adviser' ? '#DDDDDD' : 'inherit' }}>
+                            <ListItemText
+                                primary={new Date(caseComment.case_comment_dtlc).toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', second: 'numeric', day: 'numeric', month: 'numeric', year: 'numeric' })}
+                                secondary={
+                                    <React.Fragment>
+                                        <Typography
+                                            sx={{ display: 'inline' }}
+                                            component="span"
+                                            variant="body2"
+                                            color="text.primary"
+                                        >
+                                            {caseComment.case_comment_message}
+                                        </Typography>
+                                    </React.Fragment>
+                                }
+                            />
+                        </ListItem>
+                    ))}
+                </List>
             )}
-        </div>
+        </Box>
     );
 }
 
-// Export component
+// Export the component as the default object
 export default CaseCommentList;

@@ -8,7 +8,7 @@ import {
   TimelineContent,
   TimelineDot,
 } from "@mui/lab";
-import { Paper } from "@mui/material";
+import { Paper, Box } from "@mui/material";
 
 const AuditCaseList = ({ caseId }) => {
   const [auditCases, setAuditCases] = useState([]);
@@ -51,10 +51,10 @@ const AuditCaseList = ({ caseId }) => {
             <TimelineConnector />
           </TimelineSeparator>
           <TimelineContent>
-            <Paper elevation={3} sx={{ p: 2 }}>
+            <Box elevation={3} sx={{ p: 1 }}>
               <p>{formatDate(auditCase.audit_created_at)}</p>
               <p>{auditCase.audit_message}</p>
-            </Paper>
+            </Box>
           </TimelineContent>
         </TimelineItem>
       ))}

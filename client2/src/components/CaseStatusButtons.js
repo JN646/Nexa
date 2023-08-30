@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Button from '@mui/material/Button';
 
 const CaseStatusButtons = ({ caseID }) => {
   const [currentStatus, setCurrentStatus] = useState("");
@@ -40,32 +42,33 @@ const CaseStatusButtons = ({ caseID }) => {
     };
 
     return (
-      <div className="btn-group" role="group" aria-label="Case Status Buttons">
-        <button
-          type="button"
-          className="btn btn-primary"
+      <ButtonGroup
+        variant="contained"
+        aria-label="Case Status Buttons"
+        sx={{ boxShadow: "none" }} // Add this line to remove the drop shadow
+      >
+        <Button
+          color="primary"
           onClick={() => handleStatusChange("Working")}
           disabled={currentStatus === "Working" || currentStatus === "Accepted"}
         >
           Working
-        </button>
-        <button
-          type="button"
-          className="btn btn-warning"
+        </Button>
+        <Button
+          color="warning"
           onClick={() => handleStatusChange("Hold")}
           disabled={currentStatus === "Hold" || currentStatus === "Accepted"}
         >
           Hold
-        </button>
-        <button
-          type="button"
-          className="btn btn-success"
+        </Button>
+        <Button
+          color="success"
           onClick={() => handleStatusChange("Done")}
           disabled={currentStatus === "Done" || currentStatus === "Accepted"}
         >
           Done
-        </button>
-      </div>
+        </Button>
+      </ButtonGroup>
     );
   };
 
