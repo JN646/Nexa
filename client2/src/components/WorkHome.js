@@ -44,7 +44,7 @@ const WorkHome = ({ AdviserID, CaseID }) => {
                 <CaseInfo caseID={CaseID} />
               </div>
             </div>
-            <div className="col-sm-6 col-md-6 col-sm-12 border">
+            <div className="col-sm-7 col-md-7 col-sm-12 border">
               <div className="row">
                 <h4>Case Workspace</h4>
                 <CaseStatusButtons caseID={CaseID} />
@@ -56,7 +56,7 @@ const WorkHome = ({ AdviserID, CaseID }) => {
                 <CaseCommentControl CaseId={CaseID} Attach="Paraplanner" AttachId="1" />
               </div>
             </div>
-            <div className="col-sm-3 col-md-3 col-sm-12 border">
+            <div className="col-sm-2 col-md-2 col-sm-12 border">
               <div className="row">
                 <h4>History</h4>
                 <AuditCaseList caseId={CaseID} />

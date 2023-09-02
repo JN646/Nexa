@@ -7,10 +7,9 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import Paper from '@mui/material/Paper';
 import AdviserDetailsModal from './AdviserDetailsModal';
 
-const ParaplpannerCaseList = () => {
+const ParaplannerCaseList = () => {
     const [cases, setCases] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -27,14 +26,14 @@ const ParaplpannerCaseList = () => {
             } catch (error) {
                 if (error.response && error.response.status === 400) {
                     console.log('No cases found');
-                    setLoading(false);
                 } else {
                     console.error('Error fetching cases:', error);
                 }
+                setLoading(false);
             }
         };
         fetchData();
-    }, []);
+    }, []); // Pass an empty dependency array to run the effect only once
 
     return (
         <div>
@@ -47,7 +46,7 @@ const ParaplpannerCaseList = () => {
                             <TableRow>
                                 <TableCell>ID</TableCell>
                                 <TableCell>Case ID</TableCell>
-                                <TableCell>Paraplaner</TableCell>
+                                <TableCell>Paraplanner</TableCell>
                                 <TableCell>Adviser</TableCell>
                                 <TableCell>Bid Price</TableCell>
                                 <TableCell>Status</TableCell>
@@ -61,7 +60,7 @@ const ParaplpannerCaseList = () => {
                                     <TableCell>{bid_case_id}</TableCell>
                                     <TableCell>{pp_firstname} {pp_lastname}</TableCell>
                                     <TableCell>
-                                        <AdviserDetailsModal adviserId={ bid_ad_id } />
+                                        <AdviserDetailsModal adviserId={bid_ad_id} />
                                     </TableCell>
                                     <TableCell>{bid_price}</TableCell>
                                     <TableCell>{bid_status}</TableCell>
@@ -76,4 +75,4 @@ const ParaplpannerCaseList = () => {
     );
 };
 
-export default ParaplpannerCaseList;
+export default ParaplannerCaseList;
