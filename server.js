@@ -1972,7 +1972,7 @@ app.post("/api/case-comments/create", [
         }
 
         // Create Audit Log
-       createAudit(case_comment_case_id, "work_case", case_comment_attach_id, "Case comment created");
+        createAudit("work_case", case_comment_case_id, "Case comment created");
     });
 });
 
@@ -2000,7 +2000,7 @@ app.delete("/api/case-comments/delete/:id", [
         }
 
         // Create Audit Log
-        createAudit(case_comment_case_id, "work_case", case_comment_attach_id, "Case comment deleted");
+        createAudit("work_case", case_comment_case_id, "Case comment deleted");
     });
 });
 

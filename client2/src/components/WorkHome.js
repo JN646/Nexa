@@ -53,7 +53,7 @@ const WorkHome = ({ AdviserID, CaseID }) => {
               <div className="row">
                 <h4>Case Comments</h4>
                 <CaseCommentList caseId={CaseID} />
-                <CaseCommentControl />
+                <CaseCommentControl CaseId={CaseID} Attach="Paraplanner" AttachId="1" />
               </div>
             </div>
             <div className="col-sm-3 col-md-3 col-sm-12 border">
