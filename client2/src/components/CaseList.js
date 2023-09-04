@@ -4,7 +4,7 @@ import CaseModal from './CaseModal';
 import BidCount from './BidCount';
 import AdviserDetailsModal from './AdviserDetailsModal';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Paper } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel } from '@mui/material';
 
 const CaseList = () => {
     const [cases, setCases] = useState([]);
@@ -121,16 +121,6 @@ const CaseList = () => {
                                         Due Date
                                     </TableSortLabel>
                                 </TableCell>
-
-                                <TableCell>
-                                    <TableSortLabel
-                                        active={orderBy === 'case_bid_status'}
-                                        direction={orderBy === 'case_bid_status' ? order : 'asc'}
-                                        onClick={() => handleSort('case_bid_status')}
-                                    >
-                                        Status
-                                    </TableSortLabel>
-                                </TableCell>
                                 <TableCell>Bids</TableCell>
                                 <TableCell>Info</TableCell>
                             </TableRow>
@@ -143,7 +133,6 @@ const CaseList = () => {
                                     <TableCell className='text-center'><AdviserDetailsModal adviserId={case_ad_id} /></TableCell>
                                     <TableCell className='text-center'>{new Date(case_created_at).toLocaleDateString('en-GB')}</TableCell>
                                     <TableCell className='text-center'>{case_due_date ? new Date(case_due_date).toLocaleDateString('en-GB') : ''}</TableCell>
-                                    <TableCell className='text-center'>{case_bid_status}</TableCell>
                                     <TableCell className='text-center'><BidCount bidCaseId={case_id} /></TableCell>
                                     <TableCell className='text-center'>
                                         <CaseModal caseId={case_id} />

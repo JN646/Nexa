@@ -1998,24 +1998,6 @@ app.delete("/api/case-comments/delete/:id", [
         } else {
             res.status(200).json(result);
         }
-
-        // Create Audit Log
-        // Get the case id of the comment just deleted.
-        // const sql = `SELECT case_comment_case_id FROM case_comments WHERE case_comment_id = ?`;
-        // db.query(sql, [id], (err, result) => {
-        //     if (err) {
-        //         throw err;
-        //     }
-
-        //     // If result not found
-        //     if (result.length == 0) {
-        //         res.status(400).json("Case comment not found.");
-        //         return;
-        //     } else {
-        //         // Create Audit Log
-        //         createAudit("work_case", result[0].case_comment_case_id, "Case comment deleted");
-        //     }
-        // });
     });
 });
 

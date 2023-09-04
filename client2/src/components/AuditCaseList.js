@@ -8,6 +8,7 @@ import {
   TimelineContent,
   TimelineDot,
 } from "@mui/lab";
+import { timelineItemClasses } from '@mui/lab/TimelineItem';
 import { Typography } from "@mui/material";
 
 const AuditCaseList = ({ caseId }) => {
@@ -34,22 +35,31 @@ const AuditCaseList = ({ caseId }) => {
   };
 
   return (
-    <Timeline position="right">
-      {auditCases.map((auditCase) => (
-        <TimelineItem key={auditCase.caseId}>
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent>
+    <div className="TimelineContainer">
+      <Timeline
+        sx={{
+          [`& .${timelineItemClasses.root}:before`]: {
+            flex: 0,
+            padding: 0,
+          },
+        }}
+      >
+        {auditCases.map((auditCase) => (
+          <TimelineItem key={auditCase.caseId}>
+            <TimelineSeparator>
+              <TimelineDot />
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
               <Typography variant="caption">
                 {formatDate(auditCase.audit_created_at)}
               </Typography>
               <Typography variant="body2">{auditCase.audit_message}</Typography>
-          </TimelineContent>
-        </TimelineItem>
-      ))}
-    </Timeline>
+            </TimelineContent>
+          </TimelineItem>
+        ))}
+      </Timeline>
+    </div>
   );
 };
 

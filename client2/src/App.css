@@ -14,3 +14,11 @@ body {
 .Done {
   color: green;
 }
+
+.TimelineContainer {
+  height: 400px;
+  overflow: scroll;
+  border: 1px solid #dee2e6;
+  background-color: #fbfbfb;
+  border-radius: 5px;
+}

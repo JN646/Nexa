@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Typography } from "@mui/material";
 
 const CaseInfo = ({ caseID }) => {
-  const [cases, setCases] = useState([]);
+  const [cases, setCases] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`/api/cases/${caseID}`, {
-        headers: {
-          "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
-        },
-      })
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/cases/${caseID}`, {
+          headers: {
+            "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
+          },
+        });
         setCases(response.data[0]);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching case detail:", error);
         setError(error);
-      });
+      }
+    };
+    fetchData();
   }, [caseID]);
 
   if (error) {
@@ -30,22 +32,21 @@ const CaseInfo = ({ caseID }) => {
     <div>
       {cases ? (
         <div>
-          <p>
-            <strong>Type:</strong> {cases.case_type}
-          </p>
-          <p>
-            <strong>Status:</strong>{" "}
+          <Typography variant="body1">
+            {cases.case_type}
+          </Typography>
+          <Typography variant="body1">
             <span className={`status ${cases.case_bid_status}`}>
               {cases.case_bid_status}
             </span>
-          </p>
-          <p>
-            <strong>Due Date:</strong>{" "}
+          </Typography>
+          <Typography variant="body1">
             {new Date(cases.case_due_date).toLocaleDateString()}
-          </p>
-          <p>
+          </Typography>
+          <hr />
+          <Typography variant="body1">
             <strong>Notes:</strong>
-          </p>
+          </Typography>
           <div>{cases.case_notes}</div>
         </div>
       ) : (

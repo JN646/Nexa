@@ -1,49 +1,76 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import AdviserRating from "./AdviserRating";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
+import { Box, Typography, Link } from "@mui/material";
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
 
-const AdviserDetails = ({adviserId}) => {
-    const [adviserData, setAdviserData] = useState(null);
+const AdviserDetails = ({ adviserId }) => {
+  const [adviserData, setAdviserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Fetch bid count from the API for the specific bid_case_id
-        axios.get(`/api/advisers/${adviserId}`, {
-            headers: {
-                'x-api-key': '6bc32663-fb4f-4b8b-86e7-f08faa2cf302'
-            }
-        })
-            .then(response => {
-                setAdviserData(response.data[0]);
-            })
-            .catch(error => {
-                console.error('Error fetching adviser:', error);
-            });
-    }, [adviserId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/advisers/${adviserId}`, {
+          headers: {
+            "x-api-key": "6bc32663-fb4f-4b8b-86e7-f08faa2cf302",
+          },
+        });
+        setAdviserData(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching adviser:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const handlePhoneClick = () => {
-        window.location.href = `tel:${adviserData.ad_tel}`;
+    fetchData();
+  }, [adviserId]);
+
+  const handlePhoneClick = () => {
+    if (adviserData) {
+      window.location.href = `tel:${adviserData.ad_tel}`;
     }
+  };
 
-    const handleEmailClick = () => {
-        window.location.href = `mailto:${adviserData.ad_email}`;
+  const handleEmailClick = () => {
+    if (adviserData) {
+      window.location.href = `mailto:${adviserData.ad_email}`;
     }
+  };
 
-    return (
-        <div>
-            {adviserData ? (
-                <div>
-                    <p><strong>Name:</strong> {adviserData.ad_firstname} {adviserData.ad_lastname}</p>
-                    <p><strong>Rating:</strong> <AdviserRating adviserId={adviserData.ad_id} /></p>
-                    <p><strong>Phone:</strong> <a href={`tel:${adviserData.ad_tel}`} onClick={handlePhoneClick}>{adviserData.ad_tel}</a></p>
-                    <p><strong>Email:</strong> <a href={`mailto:${adviserData.ad_email}`} onClick={handleEmailClick}>{adviserData.ad_email}</a></p>
-                </div>
-            ) : (
-                <CircularProgress />
-            )}
-        </div>
-    );
-}
+  return (
+    <Box>
+      {loading ? (
+        <CircularProgress />
+      ) : adviserData ? (
+        <Box>
+          <Typography variant="body1">
+            {`${adviserData.ad_firstname} ${adviserData.ad_lastname}`}
+          </Typography>
+          <Typography variant="body1">
+            <AdviserRating adviserId={adviserData.ad_id} />
+          </Typography>
+          <Typography variant="body1">
+            <PhoneIcon />{" "}
+            <Link href={`tel:${adviserData.ad_tel}`} onClick={handlePhoneClick}>
+              {adviserData.ad_tel}
+            </Link>
+          </Typography>
+          <Typography variant="body1">
+            <EmailIcon />{" "}
+            <Link href={`mailto:${adviserData.ad_email}`} onClick={handleEmailClick}>
+              {adviserData.ad_email}
+            </Link>
+          </Typography>
+        </Box>
+      ) : (
+        <Typography variant="body1">Adviser data not found.</Typography>
+      )}
+    </Box>
+  );
+};
 
-// Export the component
 export default AdviserDetails;

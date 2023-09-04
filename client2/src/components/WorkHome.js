@@ -32,31 +32,31 @@ const WorkHome = ({ AdviserID, CaseID }) => {
         >
         <Box p={2} sx={{ overflowY: "scroll", maxHeight: "90vh", backgroundColor: "#f5f5f5" }}>
           <div className="row">
-            <div className="col-sm-3 col-md-3 col-sm-12 border">
+            <div className="col-sm-3 col-md-3 col-sm-12">
 
               <div className="row">
-                <h4>Adviser Details</h4>
+                <h4>Adviser</h4>
                 <AdviserDetails adviserId={AdviserID} />
               </div>
-
+              <hr />
               <div className="row">
                 <h4>Case Info</h4>
                 <CaseInfo caseID={CaseID} />
               </div>
             </div>
-            <div className="col-sm-7 col-md-7 col-sm-12 border">
+            <div className="col-sm-7 col-md-7 col-sm-12 border-right border-left">
               <div className="row">
                 <h4>Case Workspace</h4>
                 <CaseStatusButtons caseID={CaseID} />
               </div>
-
+              <hr />
               <div className="row">
                 <h4>Case Comments</h4>
                 <CaseCommentList caseId={CaseID} />
                 <CaseCommentControl CaseId={CaseID} Attach="Paraplanner" AttachId="1" />
               </div>
             </div>
-            <div className="col-sm-2 col-md-2 col-sm-12 border">
+            <div className="col-sm-2 col-md-2 col-sm-12">
               <div className="row">
                 <h4>History</h4>
                 <AuditCaseList caseId={CaseID} />
